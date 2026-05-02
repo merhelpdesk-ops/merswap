@@ -1,19 +1,22 @@
-import "@solana/wallet-adapter-react-ui/styles.css";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
 
-export const metadata = {
-  title: "MER SWAP",
-  description: "Solana Swap Interface",
+const inter = Inter({ subsets: ["latin"] });
+
+export const metadata: Metadata = {
+  title: "MER Swap",
+  description: "Modern crypto swap interface",
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
-    <html lang="zh">
-      <body style={{ margin: 0, padding: 0, background: '#000' }}>{children}</body>
+    <html lang="en">
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }
- 
