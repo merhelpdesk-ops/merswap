@@ -4,20 +4,22 @@ import { useState, useEffect } from "react";
 import { ConnectionProvider, WalletProvider, useWallet } from "@solana/wallet-adapter-react";
 import { WalletModalProvider, WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-wallets";
-import { clusterApiUrl, Connection, VersionedTransaction } from "@solana/web3.js";
+import { Connection, VersionedTransaction } from "@solana/web3.js";
+import { Buffer } from 'buffer';
+
+const MY_RPC = "https://devnet.helius-rpc.com/?api-key=36328869-15b9-4537-a162-550617733a76";
 
 const wallets = [new PhantomWalletAdapter()];
 
 function SwapUI() {
-  const { publicKey, connected, sendTransaction, signTransaction } = useWallet();
+  const { publicKey, connected, signTransaction } = useWallet();
   const [payAmount, setPayAmount] = useState("");
   const [receiveAmount, setReceiveAmount] = useState("0.00");
   const [quoteResponse, setQuoteResponse] = useState<any>(null);
   const [status, setStatus] = useState("");
 
-  const connection = new Connection(clusterApiUrl("mainnet-beta"));
+  const connection = new Connection(MY_RPC);
 
-  // 1. 获取报价逻辑
   const getQuote = async (val: string) => {
     setPayAmount(val);
     if (!val || isNaN(Number(val)) || Number(val) <= 0) {
@@ -27,7 +29,7 @@ function SwapUI() {
     try {
       const amountInLamports = Math.floor(Number(val) * 10 ** 9);
       const res = await fetch(
-        `https://lite-api.jup.ag/swap/v1/quote?inputMint=So11111111111111111111111111111111111111112&outputMint=EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v&amount=${amountInLamports}&slippageBps=50`
+        `https://quote-api.jup.ag/v6/quote?inputMint=So11111111111111111111111111111111111111112&outputMint=EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v&amount=${amountInLamports}&slippageBps=50`
       );
       const data = await res.json();
       if (data.outAmount) {
@@ -35,22 +37,19 @@ function SwapUI() {
         setReceiveAmount((Number(data.outAmount) / 10 ** 6).toFixed(2));
       }
     } catch (e) {
-      console.error("报价获取失败", e);
+      console.error("报价失败", e);
     }
   };
 
-  // 2. 执行真正的兑换逻辑
   const handleSwap = async () => {
     if (!connected || !publicKey || !quoteResponse || !signTransaction) {
-      alert("请先连接钱包并获取报价");
+      alert("请连接钱包并输入金额");
       return;
     }
 
     try {
-      setStatus("正在准备交易数据...");
-      
-      // 请求 Jupiter 生成交易对象
-      const swapRes = await fetch('https://api.jup.ag/swap/v1/swap', {
+      setStatus("正在构建交易...");
+      const swapRes = await fetch('https://quote-api.jup.ag/v6/swap', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -61,31 +60,26 @@ function SwapUI() {
       });
 
       const { swapTransaction } = await swapRes.json();
-      setStatus("请在钱包中确认签名...");
+      setStatus("等待钱包签名...");
 
-      // 解析并签名交易
-      const swapTransactionBuf = Buffer.from(swapTransaction, 'base64');
-      const transaction = VersionedTransaction.deserialize(swapTransactionBuf);
-      
-      // 弹出钱包签名界面
+      window.Buffer = Buffer; 
+      const transaction = VersionedTransaction.deserialize(Buffer.from(swapTransaction, 'base64'));
       const signedTransaction = await signTransaction(transaction);
       
-      // 发送交易到区块链
-      setStatus("正在链上广播交易...");
+      setStatus("正在链上广播...");
       const txid = await connection.sendRawTransaction(signedTransaction.serialize(), {
         skipPreflight: true,
         maxRetries: 2
       });
 
-      setStatus(`交易已发出！正在确认...`);
+      setStatus(`交易提交成功！`);
       await connection.confirmTransaction(txid);
-      
       setStatus("✅ 兑换成功！");
-      alert("恭喜！兑换已在链上确认。");
+      alert("交易成功！");
     } catch (error: any) {
       console.error(error);
       setStatus("❌ 交易失败");
-      alert("交易取消或失败: " + error.message);
+      alert("错误: " + error.message);
     }
   };
 
@@ -112,17 +106,12 @@ function SwapUI() {
 
         <div style={{ marginTop: "20px", display: "flex", flexDirection: "column", gap: "12px" }}>
           <div style={{ textAlign: "center" }}><WalletMultiButton /></div>
-          
           {connected && (
-            <button
-              onClick={handleSwap}
-              style={{ background: "#4ade80", color: "#000", border: "none", padding: "15px", borderRadius: "12px", fontSize: "16px", fontWeight: "bold", cursor: "pointer" }}
-            >
-              立即执行兑换
+            <button onClick={handleSwap} style={{ background: "#4ade80", color: "#000", border: "none", padding: "15px", borderRadius: "12px", fontSize: "16px", fontWeight: "bold", cursor: "pointer" }}>
+              立即兑换
             </button>
           )}
-          
-          {status && <div style={{ fontSize: "12px", color: "#4ade80", textAlign: "center", marginTop: "10px" }}>{status}</div>}
+          {status && <div style={{ fontSize: "12px", color: "#4ade80", textAlign: "center" }}>{status}</div>}
         </div>
       </div>
     </div>
@@ -131,7 +120,7 @@ function SwapUI() {
 
 export default function Home() {
   return (
-    <ConnectionProvider endpoint={clusterApiUrl("mainnet-beta")}>
+    <ConnectionProvider endpoint={MY_RPC}>
       <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>
           <SwapUI />
