@@ -37,18 +37,18 @@ function SwapUI() {
         setReceiveAmount((Number(data.outAmount) / 10 ** 6).toFixed(2));
       }
     } catch (e) {
-      console.error("报价失败", e);
+      console.error("Quote failed", e);
     }
   };
 
   const handleSwap = async () => {
     if (!connected || !publicKey || !quoteResponse || !signTransaction) {
-      alert("请连接钱包并输入金额");
+      alert("Please connect wallet and enter amount");
       return;
     }
 
     try {
-      setStatus("正在构建交易...");
+      setStatus("Preparing transaction...");
       const swapRes = await fetch('https://quote-api.jup.ag/v6/swap', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -60,26 +60,26 @@ function SwapUI() {
       });
 
       const { swapTransaction } = await swapRes.json();
-      setStatus("等待钱包签名...");
+      setStatus("Awaiting signature...");
 
       window.Buffer = Buffer; 
       const transaction = VersionedTransaction.deserialize(Buffer.from(swapTransaction, 'base64'));
       const signedTransaction = await signTransaction(transaction);
       
-      setStatus("正在链上广播...");
+      setStatus("Broadcasting...");
       const txid = await connection.sendRawTransaction(signedTransaction.serialize(), {
         skipPreflight: true,
         maxRetries: 2
       });
 
-      setStatus(`交易提交成功！`);
+      setStatus(`Transaction sent!`);
       await connection.confirmTransaction(txid);
-      setStatus("✅ 兑换成功！");
-      alert("交易成功！");
+      setStatus("✅ Success!");
+      alert("Swap successful!");
     } catch (error: any) {
       console.error(error);
-      setStatus("❌ 交易失败");
-      alert("错误: " + error.message);
+      setStatus("❌ Failed");
+      alert("Error: " + error.message);
     }
   };
 
@@ -89,7 +89,7 @@ function SwapUI() {
         <h2 style={{ color: "#4ade80", textAlign: "center" }}>MER SWAP PRO</h2>
         
         <div style={{ background: "#222", padding: "15px", borderRadius: "15px", marginBottom: "10px" }}>
-          <div style={{ fontSize: "12px", color: "#888" }}>支付 SOL</div>
+          <div style={{ fontSize: "12px", color: "#888" }}>Pay SOL</div>
           <input
             type="number"
             value={payAmount}
@@ -100,7 +100,7 @@ function SwapUI() {
         </div>
 
         <div style={{ background: "#222", padding: "15px", borderRadius: "15px" }}>
-          <div style={{ fontSize: "12px", color: "#888" }}>收到 USDC (预计)</div>
+          <div style={{ fontSize: "12px", color: "#888" }}>Receive USDC (Estimated)</div>
           <div style={{ fontSize: "24px", marginTop: "10px" }}>{receiveAmount}</div>
         </div>
 
@@ -108,7 +108,7 @@ function SwapUI() {
           <div style={{ textAlign: "center" }}><WalletMultiButton /></div>
           {connected && (
             <button onClick={handleSwap} style={{ background: "#4ade80", color: "#000", border: "none", padding: "15px", borderRadius: "12px", fontSize: "16px", fontWeight: "bold", cursor: "pointer" }}>
-              立即兑换
+              Swap Now
             </button>
           )}
           {status && <div style={{ fontSize: "12px", color: "#4ade80", textAlign: "center" }}>{status}</div>}
