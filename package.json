@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
     "next": "latest",
@@ -18,5 +19,12 @@
     "@raydium-io/raydium-sdk-v2": "latest",
     "bn.js": "latest",
     "lucide-react": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "@types/bn.js": "latest",
+    "typescript": "latest"
   }
 }
