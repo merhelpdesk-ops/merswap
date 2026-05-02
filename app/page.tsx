@@ -16,7 +16,6 @@ function SwapUI() {
   const [receiveAmount, setReceiveAmount] = useState("0.00");
   const [isLoading, setIsLoading] = useState(false);
 
-  // 1. 获取钱包 SOL 余额
   useEffect(() => {
     if (connected && publicKey) {
       const conn = new Connection(clusterApiUrl("mainnet-beta"));
@@ -26,7 +25,6 @@ function SwapUI() {
     }
   }, [connected, publicKey]);
 
-  // 2. 调用 Jupiter API 获取真实报价 (Quote)
   const fetchQuote = useCallback(async (amount: string) => {
     if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
       setReceiveAmount("0.00");
@@ -35,9 +33,8 @@ function SwapUI() {
 
     setIsLoading(true);
     try {
-      // 将 SOL 转换为最细单位 Lamports (1 SOL = 10^9 Lamports)
-      const inputMint = "So11111111111111111111111111111111111111112"; // SOL
-      const outputMint = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"; // USDC
+      const inputMint = "So11111111111111111111111111111111111111112";
+      const outputMint = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
       const lamports = Number(amount) * LAMPORTS_PER_SOL;
 
       const response = await fetch(
@@ -46,21 +43,18 @@ function SwapUI() {
       const quote = await response.json();
 
       if (quote && quote.outAmount) {
-        // USDC 是 6 位小数
         const outAmountFull = Number(quote.outAmount) / 1_000_000;
         setReceiveAmount(outAmountFull.toFixed(2));
       }
     } catch (error) {
-      console.error("获取报价失败:", error);
+      console.error("Fetch quote failed:", error);
     } finally {
       setIsLoading(false);
     }
   }, []);
 
-  // 监听输入变化
   const handleInputChange = (val: string) => {
     setPayAmount(val);
-    // 防抖处理：避免输入一个数字就请求一次
     const timeoutId = setTimeout(() => fetchQuote(val), 500);
     return () => clearTimeout(timeoutId);
   };
@@ -68,21 +62,15 @@ function SwapUI() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-[#050505] p-4 font-sans text-white">
       <div className="w-full max-w-md rounded-[24px] border border-zinc-800 bg-[#121212] p-4 shadow-2xl">
-        
         <div className="flex items-center justify-between px-2 pb-4">
           <h2 className="text-xl font-bold tracking-tight text-green-400">MER SWAP</h2>
           <div className="flex gap-3 text-zinc-400">
-            <RefreshCw 
-              size={18} 
-              className={`cursor-pointer hover:text-white ${isLoading ? 'animate-spin' : ''}`}
-              onClick={() => fetchQuote(payAmount)}
-            />
-            <Settings2 size={18} className="cursor-pointer hover:text-white" />
+            <RefreshCw size={18} className={`cursor-pointer ${isLoading ? 'animate-spin' : ''}`} onClick={() => fetchQuote(payAmount)} />
+            <Settings2 size={18} className="cursor-pointer" />
           </div>
         </div>
 
-        {/* 支付区块 */}
-        <div className="rounded-2xl bg-[#1c1c1c] p-4 transition hover:ring-1 hover:ring-zinc-700">
+        <div className="rounded-2xl bg-[#1c1c1c] p-4 mb-1">
           <div className="flex justify-between text-xs text-zinc-400 mb-2">
             <span>你支付</span>
             <span>余额: {balance} SOL</span>
@@ -95,10 +83,7 @@ function SwapUI() {
               value={payAmount}
               onChange={(e) => handleInputChange(e.target.value)}
             />
-            <button className="flex items-center gap-2 rounded-full bg-[#2d2d2d] px-3 py-1 text-sm font-bold">
-              <div className="h-5 w-5 rounded-full bg-orange-500 flex items-center justify-center text-[10px]">S</div>
-              SOL
-            </button>
+            <div className="flex items-center gap-2 rounded-full bg-[#2d2d2d] px-3 py-1 text-sm font-bold">SOL</div>
           </div>
         </div>
 
@@ -108,10 +93,9 @@ function SwapUI() {
           </div>
         </div>
 
-        {/* 接收区块 */}
-        <div className="rounded-2xl bg-[#1c1c1c] p-4 transition hover:ring-1 hover:ring-zinc-700">
+        <div className="rounded-2xl bg-[#1c1c1c] p-4 mt-1">
           <div className="flex justify-between text-xs text-zinc-400 mb-2">
-            <span>你收到 (实时报价)</span>
+            <span>你收到 (预计)</span>
           </div>
           <div className="flex items-center justify-between">
             <input
@@ -121,14 +105,10 @@ function SwapUI() {
               className="w-full bg-transparent text-3xl font-medium outline-none text-zinc-300"
               value={receiveAmount}
             />
-            <button className="flex items-center gap-2 rounded-full bg-[#2d2d2d] px-3 py-1 text-sm font-bold">
-              <div className="h-5 w-5 rounded-full bg-blue-500 flex items-center justify-center text-[10px]">U</div>
-              USDC
-            </button>
+            <div className="flex items-center gap-2 rounded-full bg-[#2d2d2d] px-3 py-1 text-sm font-bold">USDC</div>
           </div>
         </div>
 
-        {/* 核心按钮 */}
         <div className="mt-4">
           {!connected ? (
             <div className="flex justify-center w-full bg-white rounded-2xl overflow-hidden">
@@ -138,14 +118,14 @@ function SwapUI() {
             <button 
               className="w-full rounded-2xl bg-green-500 py-4 text-lg font-bold text-black transition hover:bg-green-400 disabled:bg-zinc-800 disabled:text-zinc-500"
               disabled={!payAmount || isLoading}
-              onClick={() => alert('报价已锁定！下一步：集成 Swap API 即可完成真实链上转账。')}
+              onClick={() => alert('报价已锁定！')}
             >
               {isLoading ? "正在获取价格..." : "立即交换"}
             </button>
           )}
         </div>
       </div>
-      <p className="mt-6 text-[10px] text-zinc-600 text-center uppercase tracking-widest">Live Price via Jupiter v6 API</p>
+      <p className="mt-6 text-[10px] text-zinc-600 text-center uppercase tracking-widest">Live Price via Jupiter API</p>
     </main>
   );
 }
