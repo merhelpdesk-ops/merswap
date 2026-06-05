@@ -1,45 +1,46 @@
-    // Secure depth replacement: Modify leaf node text only to maintain DOM structure and layout
-    const findAndReplaceText = (currentRoot: Document | ShadowRoot | HTMLElement) => {
-      const allElements = currentRoot.querySelectorAll('*');
+const findAndReplaceText = (currentRoot: Document | ShadowRoot | HTMLElement) => {
+  // 使用 ElementList 类型明确声明
+  const allElements = currentRoot.querySelectorAll('*');
+  
+  allElements.forEach((el) => {
+    // 确保 el 被正确识别为 HTMLElement
+    const htmlEl = el as HTMLElement;
+
+    // 严谨的 Shadow DOM 类型处理
+    if (htmlEl.shadowRoot) {
+      findAndReplaceText(htmlEl.shadowRoot as ShadowRoot);
+    }
+
+    const text = htmlEl.textContent || '';
+
+    // 使用简单的 if 逻辑替换文本，减少复杂判断
+    if (htmlEl.children.length === 0) {
+      if (text.includes('Powered by')) {
+        htmlEl.textContent = 'MER DEX protects your assets';
+        // 隐藏相关图标
+        if (htmlEl.parentElement) {
+          const icons = htmlEl.parentElement.querySelectorAll('svg, img');
+          icons.forEach((icon) => (icon as HTMLElement).style.display = 'none');
+        }
+      }
       
-      allElements.forEach((el) => {
-        const htmlEl = el as HTMLElement;
+      if (text.includes('Seamlessly integrate')) {
+        htmlEl.textContent = 'Aggregate multi-DEX services and capture token information MER DEX provides you with a safe and efficient trading experience!';
+      }
 
-        // Traverse into Shadow DOM
-        if (htmlEl.shadowRoot) {
-          findAndReplaceText(htmlEl.shadowRoot);
-        }
-
-        const text = htmlEl.textContent || '';
-
-        // 1. Handle "Powered by" text
-        if (text.includes('Powered by') && htmlEl.children.length === 0) {
-          htmlEl.textContent = 'MER DEX protects your assets';
-          if (htmlEl.parentElement) {
-            const icons = htmlEl.parentElement.querySelectorAll('svg, img');
-            icons.forEach(icon => ((icon as HTMLElement).style.display = 'none'));
-          }
-        }
-
-        // 2. Handle "Ultra Swap" description
-        if (text.includes('Seamlessly integrate') && htmlEl.children.length === 0) {
-          htmlEl.textContent = 'Aggregate multi-DEX services and capture token information MER DEX provides you with a safe and efficient trading experience!';
-        }
-
-        // 3. Handle "Swap fees" and its subtext
-        if (text.trim() === 'Swap fees' && htmlEl.children.length === 0) {
-          htmlEl.textContent = 'MER DEX';
-        }
-        if (text.trim() === 'Earn swap fees easily.' && htmlEl.children.length === 0) {
-          htmlEl.textContent = 'MER DEX makes it easy for you to trade!';
-        }
-
-        // 4. NEW: Handle "Customizable Options"
-        if (text.trim() === 'Customizable Options' && htmlEl.children.length === 0) {
-          htmlEl.textContent = 'MERDEX top security';
-        }
-        if (text.trim() === 'Multiple display options and other configurations to match your application\'s needs.' && htmlEl.children.length === 0) {
-          htmlEl.textContent = 'Your transaction behavior is protected by MERDEX aggregator.';
-        }
-      });
-    };
+      if (text.trim() === 'Swap fees') {
+        htmlEl.textContent = 'MER DEX';
+      }
+      if (text.trim() === 'Earn swap fees easily.') {
+        htmlEl.textContent = 'MER DEX makes it easy for you to trade!';
+      }
+      
+      if (text.trim() === 'Customizable Options') {
+        htmlEl.textContent = 'MERDEX top security';
+      }
+      if (text.trim() === 'Multiple display options and other configurations to match your application\'s needs.') {
+        htmlEl.textContent = 'Your transaction behavior is protected by MERDEX aggregator.';
+      }
+    }
+  });
+};
