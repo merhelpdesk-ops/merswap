@@ -6,7 +6,6 @@ import Header from '../components/Header';
 import InitialScreen from './screens/InitialScreen';
 import SwappingScreen from './screens/SwappingScreen';
 import WalletScreen from './screens/WalletScreen';
-import JupiterLogoV2 from 'src/icons/JupiterLogoV2';
 import { BrandingProvider } from 'src/contexts/BrandingProvider';
 
 const Content = () => {
@@ -25,12 +24,10 @@ const Content = () => {
         {screen === 'Swapping' ? <SwappingScreen /> : null}
         {screen === 'Wallet' ? <WalletScreen /> : null}
       </div>
-      <span className="text-primary-text/50 text-xs p-2 flex-row flex gap-1  justify-center">
-        Powered by
-        <a href={'https://jup.ag'} target={'_blank'} rel="noreferrer noopener" className="flex items-center gap-1 ">
-          <JupiterLogoV2 className="text-primary-text/50" width={15} height={15} />
-          Jupiter
-        </a>
+      
+      {/* 修改后的品牌文案 */}
+      <span className="text-primary-text/50 text-xs p-2 flex-row flex gap-1 justify-center">
+        MERDEX protects the safety of your assets
       </span>
     </div>
   );
