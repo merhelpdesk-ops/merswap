@@ -69,6 +69,51 @@ export default function App() {
   const [isSideDrawerOpen, setIsSideDrawerOpen] = useState(false);
   const [sideDrawerTab, setSideDrawerTab] = useState<'config' | 'snippet'>('config');
 
+  // 强效实时拦截脚本：动态移除 Shadow DOM 内部和页面上残留的 Jupiter 标志
+  useEffect(() => {
+    const cleanJupiterAssets = () => {
+      // 1. 全局及 Shadow DOM 深度扫描定位图标并对其进行物理隐藏
+      const terminalContainers = document.querySelectorAll('#jupiter-terminal, .jupiter-terminal, [class*="terminal"]');
+      terminalContainers.forEach((container) => {
+        // 寻找头部包裹文字旁边的所有 svg
+        const svgs = container.querySelectorAll('svg');
+        svgs.forEach((svg) => {
+          if (svg.innerHTML.includes('path') || svg.closest('[class*="header"]') || svg.closest('[class*="Header"]')) {
+            // 如果该 svg 紧挨着 MERDEX，或者属于标题栏，强制隐蔽
+            svg.style.setProperty('display', 'none', 'important');
+            svg.style.setProperty('width', '0px', 'important');
+            svg.style.setProperty('height', '0px', 'important');
+            svg.style.setProperty('opacity', '0', 'important');
+          }
+        });
+      });
+
+      // 2. 移除任何带有默认文字提示的残留元素
+      const spans = document.querySelectorAll('span, p, div');
+      spans.forEach((el) => {
+        if (el.textContent?.includes('Jupiter renders as')) {
+          el.style.setProperty('display', 'none', 'important');
+          el.textContent = '';
+        }
+      });
+    };
+
+    // 初次加载载入
+    cleanJupiterAssets();
+
+    // 开启高频动态变化监听，防止切换 Tab 或断网重连时 Logo 再次闪现
+    const observer = new MutationObserver(() => {
+      cleanJupiterAssets();
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    return () => observer.disconnect();
+  }, [displayMode]);
+
   // Cleanup on tab change
   useEffect(() => {
     if (window.Jupiter._instance) {
@@ -100,7 +145,7 @@ export default function App() {
                 name: 'MERDEX',
                 description: '',
                 url: 'https://plugin.jup.ag',
-                iconUrls: [''],
+                iconUrls: ['data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'],
               },
               theme: 'jupiter',
             }}
@@ -113,6 +158,29 @@ export default function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      {/* 注入全局最高层级 CSS 规则，多级穿透样式拦截 */}
+      <style dangerouslySetInnerHTML={{__html: `
+        /* 强制切除插件交易框内左上角的小地球图标 */
+        #jupiter-terminal svg:first-of-type,
+        .jupiter-terminal svg:first-of-type,
+        [class*="terminal"] div[class*="header"] svg,
+        [class*="terminal"] div[class*="Header"] svg,
+        div[class*="header"] > div > svg:first-child,
+        span[class*="text-white/20"] + div svg {
+          display: none !important;
+          width: 0 !important;
+          height: 0 !important;
+          opacity: 0 !important;
+          visibility: hidden !important;
+        }
+        /* 强制隐藏任何可能残留的默认文字 */
+        .bg-landing-bg > div span.text-xs,
+        span:contains("Jupiter renders as") {
+          display: none !important;
+          opacity: 0 !important;
+        }
+      `}} />
+
       <DefaultSeo
         title={'MERDEX'}
         openGraph={{
@@ -223,7 +291,6 @@ export default function App() {
                               onClick={() => setIsSideDrawerOpen(true)}
                             >
                               Customize
-                              {/* <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 256 256"><path fill="currentColor" d="M128 80a48 48 0 1 0 48 48a48.05 48.05 0 0 0-48-48m0 80a32 32 0 1 1 32-32a32 32 0 0 1-32 32m88-29.84q.06-2.16 0-4.32l14.92-18.64a8 8 0 0 0 1.48-7.06a107.2 107.2 0 0 0-10.88-26.25a8 8 0 0 0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186 40.54a8 8 0 0 0-3.94-6a107.7 107.7 0 0 0-26.25-10.87a8 8 0 0 0-7.06 1.49L130.16 40h-4.32L107.2 25.11a8 8 0 0 0-7.06-1.48a107.6 107.6 0 0 0-26.25 10.88a8 8 0 0 0-3.93 6l-2.64 23.76q-1.56 1.49-3 3L40.54 70a8 8 0 0 0-6 3.94a107.7 107.7 0 0 0-10.87 26.25a8 8 0 0 0 1.49 7.06L40 125.84v4.32L25.11 148.8a8 8 0 0 0-1.48 7.06a107.2 107.2 0 0 0 10.88 26.25a8 8 0 0 0 6 3.93l23.72 2.64q1.49 1.56 3 3L70 215.46a8 8 0 0 0 3.94 6a107.7 107.7 0 0 0 26.25 10.87a8 8 0 0 0 7.06-1.49L125.84 216q2.16.06 4.32 0l18.64 14.92a8 8 0 0 0 7.06 1.48a107.2 107.2 0 0 0 26.25-10.88a8 8 0 0 0 3.93-6l2.64-23.72q1.56-1.48 3-3l23.78-2.8a8 8 0 0 0 6-3.94a107.7 107.7 0 0 0 10.87-26.25a8 8 0 0 0-1.49-7.06Zm-16.1-6.5a74 74 0 0 1 0 8.68a8 8 0 0 0 1.74 5.48l14.19 17.73a91.6 91.6 0 0 1-6.23 15l-22.6 2.56a8 8 0 0 0-5.1 2.64a74 74 0 0 1-6.14 6.14a8 8 0 0 0-2.64 5.1l-2.51 22.58a91.3 91.3 0 0 1-15 6.23l-17.74-14.19a8 8 0 0 0-5-1.75h-.48a74 74 0 0 1-8.68 0a8 8 0 0 0-5.48 1.74l-17.78 14.2a91.6 91.6 0 0 1-15-6.23L82.89 187a8 8 0 0 0-2.64-5.1a74 74 0 0 1-6.14-6.14a8 8 0 0 0-5.1-2.64l-22.58-2.52a91.3 91.3 0 0 1-6.23-15l14.19-17.74a8 8 0 0 0 1.74-5.48a74 74 0 0 1 0-8.68a8 8 0 0 0-1.74-5.48L40.2 100.45a91.6 91.6 0 0 1 6.23-15L69 82.89a8 8 0 0 0 5.1-2.64a74 74 0 0 1 6.14-6.14A8 8 0 0 0 82.89 69l2.51-22.57a91.3 91.3 0 0 1 15-6.23l17.74 14.19a8 8 0 0 0 5.48 1.74a74 74 0 0 1 8.68 0a8 8 0 0 0 5.48-1.74l17.77-14.19a91.6 91.6 0 0 1 15 6.23L173.11 69a8 8 0 0 0 2.64 5.1a74 74 0 0 1 6.14 6.14a8 8 0 0 0 5.1 2.64l22.58 2.51a91.3 91.3 0 0 1 6.23 15l-14.19 17.74a8 8 0 0 0-1.74 5.53Z"/></svg> */}
                               <span className="absolute top-1 -right-0.5 h-1.5 w-1.5 rounded-full bg-landing-primary animate-pulse "></span>
                             </button>
                           </div>
@@ -237,13 +304,8 @@ export default function App() {
                         </div>
                         <PluginGroup tab={displayMode} />
                       </div>
-                      <span className="flex justify-center text-center text-xs text-[#9D9DA6] mb-2">
-                        {displayMode === 'modal' ? 'Jupiter renders as a modal and takes up the whole screen.' : null}
-                        {displayMode === 'integrated' ? 'MER Global platform leads the development' : null}
-                        {displayMode === 'widget'
-                          ? 'Jupiter renders as part of a widget that can be placed at different positions on your dApp.'
-                          : null}
-                      </span>
+                      {/* 直接留空该容器，防止任何文字组件兜底渲染出来 */}
+                      <span className="flex justify-center text-center text-xs text-[#9D9DA6] mb-2"></span>
                     </div>
                   </ShouldWrapWalletProvider>
                 </div>
