@@ -55,31 +55,50 @@ const IntegratedPlugin = memo(() => {
     const targetContainer = document.getElementById('target-container');
     if (!targetContainer) return;
 
-    const replaceText = () => {
-      const allElements = targetContainer.getElementsByTagName('*');
-      for (let i = 0; i < allElements.length; i++) {
-        const el = allElements[i] as HTMLElement;
-        
-        // 1. 处理 Powered by
-        if (el.textContent && el.textContent.includes('Powered by')) {
-          el.textContent = 'MER DEX protects your assets';
-          if (el.parentElement) {
-            const icons = el.parentElement.querySelectorAll('svg, img');
-            icons.forEach(icon => (icon as HTMLElement).style.display = 'none');
+    // 核心重写：深度优先递归穿透所有潜在的 Shadow DOM 节点
+    const findAndReplaceText = (currentRoot: Document | ShadowRoot | HTMLElement) => {
+      // 1. 获取当前层级下的所有子元素
+      const allElements = currentRoot.querySelectorAll('*');
+      
+      allElements.forEach((el) => {
+        const htmlEl = el as HTMLElement;
+
+        // 2. 检查是否有子 Shadow DOM，如果有，递归钻进去
+        if (htmlEl.shadowRoot) {
+          findAndReplaceText(htmlEl.shadowRoot);
+        }
+
+        // 3. 处理 "Powered by" 文字及图标隐藏
+        if (htmlEl.textContent && htmlEl.textContent.includes('Powered by')) {
+          htmlEl.textContent = 'MER DEX protects your assets';
+          if (htmlEl.parentElement) {
+            const icons = htmlEl.parentElement.querySelectorAll('svg, img');
+            icons.forEach(icon => ((icon as HTMLElement).style.display = 'none'));
           }
         }
 
-        // 2. 强制覆盖 Ultra Swap 描述 (使用更宽泛的匹配)
-        if (el.textContent && el.textContent.includes('Seamlessly integrate')) {
-          el.innerText = 'Aggregate multi-DEX services and capture token information MER DEX provides you with a safe and efficient trading experience!';
+        // 4. 精准捕获并强制修改 Ultra Swap 的核心描述文案
+        if (htmlEl.textContent && htmlEl.textContent.includes('Seamlessly integrate')) {
+          // 清空子元素直接赋文本内容，防止由于内部标签导致匹配断开
+          htmlEl.innerText = 'Aggregate multi-DEX services and capture token information MER DEX provides you with a safe and efficient trading experience!';
         }
-      }
+      });
     };
 
-    const observer = new MutationObserver(replaceText);
-    observer.observe(targetContainer, { childList: true, subtree: true, characterData: true });
+    // 监听整个文档和插件容器的树形变化，确保在加载、切页、异步渲染时文字随时被捕获替换
+    const observer = new MutationObserver(() => {
+      findAndReplaceText(document);
+    });
+
+    observer.observe(targetContainer, { 
+      childList: true, 
+      subtree: true, 
+      characterData: true 
+    });
     
-    replaceText();
+    // 初始化时立刻执行一次
+    findAndReplaceText(document);
+
     return () => observer.disconnect();
   }, [isLoaded]);
 
