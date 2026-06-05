@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Jupiter Plugin</title>
+    <script src="http://localhost:3000/plugin-v1.js" data-preload></script>
+  </head>
+
+  <body>
+    <script>
+      document.addEventListener('readystatechange', (e) => {
+        if (document.readyState === 'complete') {
+          console.log(window.Jupiter.init);
+          window.Jupiter.init({
+          });
+        }
+      });
+    </script>
+
+    <p>Page intended to test production behaviour for Plugin.</p>
+    <p>Open the console to see logs.</p>
+    <p>- Gzipped size</p>
+    <p>- FormConfigurator behaviour</p>
+    <pre>
+      npx serve ./src/
+    </pre>
+  </body>
+</html>
