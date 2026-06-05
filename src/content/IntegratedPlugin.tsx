@@ -48,7 +48,6 @@ const IntegratedPlugin = memo(() => {
     }, 100);
   }, [isLoaded, simulateWalletPassthrough, launchPlugin]);
 
-  // To make sure passthrough wallet are synced
   useEffect(() => {
     if (!window.Jupiter.syncProps) return;
     window.Jupiter.syncProps({ passthroughWalletContextState });
@@ -97,6 +96,25 @@ const IntegratedPlugin = memo(() => {
   }, [isLoaded]);
 
   return (
-    <div className=" w-full rounded-2xl text-white flex flex-col items-center  mb-4 overflow-hidden  ">
+    <div className="w-full rounded-2xl text-white flex flex-col items-center mb-4 overflow-hidden">
       <div className="flex flex-col lg:flex-row h-full w-full overflow-auto">
-        <div className=" rounded-xl overflow-hidden flex justify-center  h-
+        <div className="rounded-xl overflow-hidden flex justify-center h-[555px] w-[360px]">
+          {!isLoaded ? (
+            <div className="h-full animate-pulse mt-4 lg:mt-0 lg:ml-4 flex items-center justify-center rounded-xl">
+              <p>Loading...</p>
+            </div>
+          ) : null}
+
+          <div
+            id="target-container"
+            className={`flex h-full w-full overflow-auto justify-center bg-black rounded-xl border border-white/10 ${!isLoaded ? 'hidden' : ''}`}
+          />
+        </div>
+      </div>
+    </div>
+  );
+});
+
+IntegratedPlugin.displayName = 'IntegratedPlugin';
+
+export default IntegratedPlugin;
