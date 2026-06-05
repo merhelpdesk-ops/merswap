@@ -9,7 +9,7 @@ import { useBalances } from 'src/hooks/useBalances';
 const Header = () => {
   const { refresh, enableWalletPassthrough } = useSwapContext();
   const { refetch: refetchBalances } = useBalances();
-  const { logoUri, name } = useBranding();
+  const { name } = useBranding(); // 移除了 logoUri
 
   const onRefresh = useCallback(() => {
     refetchBalances();
@@ -19,8 +19,8 @@ const Header = () => {
   return (
     <div className="mt-2 h-7 pl-3 pr-2">
       <div className="w-full flex items-center justify-between ">
-        <div className="flex items-center space-x-2">
-          <img src={logoUri} alt="Plugin Branding" className="w-6 h-6" />
+        <div className="flex items-center">
+          {/* 图标已被移除 */}
           <span className="font-bold text-sm text-primary-text">{name}</span>
         </div>
 
