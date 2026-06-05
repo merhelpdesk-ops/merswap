@@ -97,7 +97,7 @@ export default function App() {
               env: 'mainnet-beta',
               autoConnect: true,
               metadata: {
-                name: 'Jupiter Plugin',
+                name: 'MERDEX',
                 description: '',
                 url: 'https://plugin.jup.ag',
                 iconUrls: [''],
@@ -114,18 +114,18 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <DefaultSeo
-        title={'Jupiter Plugin'}
+        title={'MERDEX'}
         openGraph={{
           type: 'website',
           locale: 'en',
-          title: 'Plugin: add Jupiter Swap to your website or app',
-          description: 'Bring the perfect swap to any web app. Jupiter Plugin is the easiest way to add full Ultra swap functionality to any website.',
+          title: 'MERDEX: secure and high-speed aggregate platform',
+          description: 'MERDEX is a secure and high-speed aggregate platform.',
           url: 'https://plugin.jup.ag/',
-          site_name: 'Jupiter Plugin',
+          site_name: 'MERDEX',
           images: [
             {
               url: `https://plugin.jup.ag/meta-og/jupiter-meta-plugin.webp`,
-              alt: 'Jupiter Aggregator',
+              alt: 'MERDEX Aggregator',
             },
           ],
         }}
@@ -184,11 +184,11 @@ export default function App() {
                 <div className="flex flex-col justify-center items-center text-center">
                   <div className="flex space-x-2">
                     <V2SexyChameleonText animate={false} className="text-4xl md:text-[60px] md:h-[66px] font-semibold flex flex-row items-center ">
-                      Jupiter Plugin
+                      MERDEX
                     </V2SexyChameleonText>
                   </div>
                   <p className="text-[#9D9DA6] text-md mt-4 heading-[24px]">
-                    Seamlessly embed a full Jupiter Ultra Swap directly in your application
+                    MERDEX is a secure and high-speed aggregate platform.
                   </p>
                 </div>
               </div>
