@@ -15,7 +15,7 @@ const IntegratedPlugin = memo(() => {
 
   const launchPlugin = useCallback(async () => {
     const win = window as any;
-    if (win.Jupiter && typeof win.Jupiter.init === 'function') {
+    if (win.Jupiter?.init) {
       win.Jupiter.init({
         displayMode: 'integrated',
         integratedTargetId: 'target-container',
@@ -32,7 +32,7 @@ const IntegratedPlugin = memo(() => {
   useEffect(() => {
     const interval = setInterval(() => {
       const win = window as any;
-      if (win.Jupiter && win.Jupiter.init) {
+      if (win.Jupiter?.init) {
         setIsLoaded(true);
         clearInterval(interval);
       }
@@ -45,24 +45,25 @@ const IntegratedPlugin = memo(() => {
   }, [isLoaded, launchPlugin]);
 
   useEffect(() => {
-    if (isLoaded) {
-      const replaceText = () => {
-        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
-        let node;
-        while (node = walker.nextNode()) {
-          const text = node.textContent || '';
-          if (text.includes('Customizable Options')) node.textContent = 'MERDEX top security';
-          if (text.includes("Multiple display options and other configurations to match your application's needs.")) 
-            node.textContent = 'Your transaction behavior is protected by MERDEX aggregator.';
-          if (text.trim() === 'Swap fees') node.textContent = 'MER DEX';
-          if (text.trim() === 'Earn swap fees easily.') node.textContent = 'MER DEX makes it easy for you to trade!';
-        }
-      };
-      const obs = new MutationObserver(replaceText);
-      obs.observe(document.body, { childList: true, subtree: true });
-      replaceText();
-      return () => obs.disconnect();
-    }
+    if (!isLoaded) return;
+
+    const replaceText = () => {
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+      let node: Node | null;
+      while ((node = walker.nextNode())) {
+        const text = node.textContent || '';
+        if (text.includes('Customizable Options')) node.textContent = 'MERDEX top security';
+        if (text.includes("Multiple display options and other configurations to match your application's needs.")) 
+          node.textContent = 'MER DEX Provide you with an excellent experience through a variety of audited codes!';
+        if (text.trim() === 'Swap fees') node.textContent = 'MER DEX';
+        if (text.trim() === 'Earn swap fees easily.') node.textContent = 'MER DEX makes it easy for you to trade!';
+      }
+    };
+    
+    const obs = new MutationObserver(replaceText);
+    obs.observe(document.body, { childList: true, subtree: true });
+    replaceText();
+    return () => obs.disconnect();
   }, [isLoaded]);
 
   return (
