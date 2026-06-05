@@ -1,4 +1,4 @@
-const findAndReplaceText = (currentRoot: any) => {
+const findAndReplaceText = (currentRoot: any): void => {
   if (!currentRoot || typeof currentRoot.querySelectorAll !== 'function') return;
 
   const allElements = currentRoot.querySelectorAll('*');
@@ -13,12 +13,13 @@ const findAndReplaceText = (currentRoot: any) => {
 
     const text = htmlEl.textContent || '';
 
-    // Only process leaf nodes
+    // Only process leaf nodes to protect layout
     if (htmlEl.children.length === 0) {
       if (text.includes('Powered by')) {
         htmlEl.textContent = 'MER DEX protects your assets';
-        if (htmlEl.parentElement) {
-          const icons = htmlEl.parentElement.querySelectorAll('svg, img');
+        const parent = htmlEl.parentElement;
+        if (parent) {
+          const icons = parent.querySelectorAll('svg, img');
           icons.forEach((icon) => {
             (icon as HTMLElement).style.display = 'none';
           });
@@ -32,6 +33,7 @@ const findAndReplaceText = (currentRoot: any) => {
       if (text.trim() === 'Swap fees') {
         htmlEl.textContent = 'MER DEX';
       }
+      
       if (text.trim() === 'Earn swap fees easily.') {
         htmlEl.textContent = 'MER DEX makes it easy for you to trade!';
       }
@@ -39,6 +41,7 @@ const findAndReplaceText = (currentRoot: any) => {
       if (text.trim() === 'Customizable Options') {
         htmlEl.textContent = 'MERDEX top security';
       }
+      
       if (text.trim() === "Multiple display options and other configurations to match your application's needs.") {
         htmlEl.textContent = 'Your transaction behavior is protected by MERDEX aggregator.';
       }
