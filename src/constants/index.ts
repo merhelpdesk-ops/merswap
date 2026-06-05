@@ -45,6 +45,12 @@ export const INITIAL_FORM_CONFIG: IFormConfigurator = Object.freeze({
     initialInputMint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
     initialOutputMint: WRAPPED_SOL_MINT.toString(),
     swapMode: SwapMode.ExactIn,  
+    // ✨ 核心修改：在这里注入你们的 Jupiter 推荐账户并设置费率
+    // 费率 50 代表 0.5%，如果你们在官网设置的是 1%，就把 50 改成 100
+    feeBps: 50, 
+    feeAccounts: process.env.NEXT_PUBLIC_JUPITER_REFERRAL_ADDRESS ? {
+      [WRAPPED_SOL_MINT.toString()]: process.env.NEXT_PUBLIC_JUPITER_REFERRAL_ADDRESS
+    } : undefined
   },
   colors: {
     primary: '199, 242, 132',
