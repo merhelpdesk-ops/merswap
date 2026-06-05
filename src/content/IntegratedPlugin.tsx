@@ -14,8 +14,9 @@ const IntegratedPlugin = memo(() => {
   const { setShowModal } = useUnifiedWalletContext();
 
   const launchPlugin = useCallback(async () => {
-    if (window.Jupiter && typeof window.Jupiter.init === 'function') {
-      window.Jupiter.init({
+    const win = window as any;
+    if (win.Jupiter && typeof win.Jupiter.init === 'function') {
+      win.Jupiter.init({
         displayMode: 'integrated',
         integratedTargetId: 'target-container',
         formProps,
@@ -30,7 +31,8 @@ const IntegratedPlugin = memo(() => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (window.Jupiter && window.Jupiter.init) {
+      const win = window as any;
+      if (win.Jupiter && win.Jupiter.init) {
         setIsLoaded(true);
         clearInterval(interval);
       }
@@ -48,12 +50,12 @@ const IntegratedPlugin = memo(() => {
         const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
         let node;
         while (node = walker.nextNode()) {
-          let text = node.textContent || '';
+          const text = node.textContent || '';
           if (text.includes('Customizable Options')) node.textContent = 'MERDEX top security';
           if (text.includes("Multiple display options and other configurations to match your application's needs.")) 
             node.textContent = 'Your transaction behavior is protected by MERDEX aggregator.';
-          if (text.includes('Swap fees')) node.textContent = 'MER DEX';
-          if (text.includes('Earn swap fees easily.')) node.textContent = 'MER DEX makes it easy for you to trade!';
+          if (text.trim() === 'Swap fees') node.textContent = 'MER DEX';
+          if (text.trim() === 'Earn swap fees easily.') node.textContent = 'MER DEX makes it easy for you to trade!';
         }
       };
       const obs = new MutationObserver(replaceText);
