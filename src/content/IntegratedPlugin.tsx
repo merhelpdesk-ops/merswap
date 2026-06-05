@@ -17,7 +17,6 @@ const IntegratedPlugin = memo(() => {
     window.Jupiter.init({
       displayMode: 'integrated',
       integratedTargetId: 'target-container',
-
       formProps,
       enableWalletPassthrough: simulateWalletPassthrough,
       passthroughWalletContextState: simulateWalletPassthrough ? passthroughWalletContextState : undefined,
@@ -34,10 +33,7 @@ const IntegratedPlugin = memo(() => {
         setIsLoaded(Boolean(window.Jupiter.init));
       }, 100);
     }
-
-    if (intervalId) {
-      return () => clearInterval(intervalId);
-    }
+    if (intervalId) return () => clearInterval(intervalId);
   }, [isLoaded]);
 
   useEffect(() => {
@@ -59,39 +55,31 @@ const IntegratedPlugin = memo(() => {
     const targetContainer = document.getElementById('target-container');
     if (!targetContainer) return;
 
-    const replacePoweredByText = () => {
-      const elements = targetContainer.querySelectorAll('span, div, p');
-      elements.forEach((el) => {
+    const replaceText = () => {
+      const allElements = targetContainer.getElementsByTagName('*');
+      for (let i = 0; i < allElements.length; i++) {
+        const el = allElements[i] as HTMLElement;
+        
+        // 1. 处理 Powered by
         if (el.textContent && el.textContent.includes('Powered by')) {
           el.textContent = 'MER DEX protects your assets';
-          
-          const siblingSvg = el.parentElement?.querySelector('svg');
-          if (siblingSvg) {
-            siblingSvg.style.display = 'none';
-          }
-          const siblingImg = el.parentElement?.querySelector('img');
-          if (siblingImg) {
-            siblingImg.style.display = 'none';
+          if (el.parentElement) {
+            const icons = el.parentElement.querySelectorAll('svg, img');
+            icons.forEach(icon => (icon as HTMLElement).style.display = 'none');
           }
         }
 
-        if (el.textContent && el.textContent.includes('Seamlessly integrate end to end jup.ag swap experience with all Ultra features')) {
-          el.textContent = 'Aggregate multi-DEX services and capture token information MER DEX provides you with a safe and efficient trading experience!';
+        // 2. 强制覆盖 Ultra Swap 描述 (使用更宽泛的匹配)
+        if (el.textContent && el.textContent.includes('Seamlessly integrate')) {
+          el.innerText = 'Aggregate multi-DEX services and capture token information MER DEX provides you with a safe and efficient trading experience!';
         }
-      });
+      }
     };
 
-    const observer = new MutationObserver(() => {
-      replacePoweredByText();
-    });
-
-    observer.observe(targetContainer, {
-      childList: true,
-      subtree: true,
-    });
-
-    replacePoweredByText();
-
+    const observer = new MutationObserver(replaceText);
+    observer.observe(targetContainer, { childList: true, subtree: true, characterData: true });
+    
+    replaceText();
     return () => observer.disconnect();
   }, [isLoaded]);
 
@@ -104,11 +92,7 @@ const IntegratedPlugin = memo(() => {
               <p>Loading...</p>
             </div>
           ) : null}
-
-          <div
-            id="target-container"
-            className={`flex h-full w-full overflow-auto justify-center bg-black rounded-xl border border-white/10 ${!isLoaded ? 'hidden' : ''}`}
-          />
+          <div id="target-container" className={`flex h-full w-full overflow-auto justify-center bg-black rounded-xl border border-white/10 ${!isLoaded ? 'hidden' : ''}`} />
         </div>
       </div>
     </div>
@@ -116,5 +100,4 @@ const IntegratedPlugin = memo(() => {
 });
 
 IntegratedPlugin.displayName = 'IntegratedPlugin';
-
 export default IntegratedPlugin;
