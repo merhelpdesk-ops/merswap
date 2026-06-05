@@ -53,7 +53,7 @@ const IntegratedPlugin = memo(() => {
       while ((node = walker.nextNode())) {
         const text = node.textContent || '';
         if (text.includes('Customizable Options')) node.textContent = 'MERDEX top security';
-        if (text.includes("Multiple display options and other configurations to match your application's needs.")) 
+        if (text.includes('Multiple display options and other configurations to match your application\'s needs.')) 
           node.textContent = 'MER DEX Provide you with an excellent experience through a variety of audited codes!';
         if (text.trim() === 'Swap fees') node.textContent = 'MER DEX';
         if (text.trim() === 'Earn swap fees easily.') node.textContent = 'MER DEX makes it easy for you to trade!';
@@ -61,7 +61,7 @@ const IntegratedPlugin = memo(() => {
     };
     
     const obs = new MutationObserver(replaceText);
-    obs.observe(document.body, { childList: true, subtree: true });
+    obs.observe(document.body, { childList: true, subtree: true, characterData: true });
     replaceText();
     return () => obs.disconnect();
   }, [isLoaded]);
