@@ -52,17 +52,31 @@ const IntegratedPlugin = memo(() => {
       let node: Node | null;
       while ((node = walker.nextNode())) {
         const text = node.textContent || '';
-        if (text.includes('Customizable Options')) node.textContent = 'MERDEX top security';
-        if (text.includes('Multiple display options and other configurations to match your application\'s needs.')) 
-          node.textContent = 'MER DEX Provide you with an excellent experience through a variety of audited codes!';
-        if (text.trim() === 'Swap fees') node.textContent = 'MER DEX';
-        if (text.trim() === 'Earn swap fees easily.') node.textContent = 'MER DEX makes it easy for you to trade!';
+        
+        // 替换逻辑
+        if (text.includes('Customizable Options')) {
+          node.textContent = 'MERDEX top security';
+        }
+        if (text.includes('Multiple display options and other configurations to match your application\'s needs.')) {
+          node.textContent = 'MERDEX provides you with top code to protect your transaction security!';
+        }
+        if (text.trim() === 'Swap fees') {
+          node.textContent = 'MER DEX';
+        }
+        if (text.trim() === 'Earn swap fees easily.') {
+          node.textContent = 'MER DEX makes it easy for you to trade!';
+        }
       }
     };
     
-    const obs = new MutationObserver(replaceText);
+    // 使用 requestAnimationFrame 优化性能，避免 MutationObserver 频繁触发导致页面卡顿
+    const obs = new MutationObserver(() => {
+      requestAnimationFrame(replaceText);
+    });
+    
     obs.observe(document.body, { childList: true, subtree: true, characterData: true });
     replaceText();
+    
     return () => obs.disconnect();
   }, [isLoaded]);
 
