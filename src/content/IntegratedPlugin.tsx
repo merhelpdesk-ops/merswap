@@ -55,36 +55,40 @@ const IntegratedPlugin = memo(() => {
     const targetContainer = document.getElementById('target-container');
     if (!targetContainer) return;
 
-    // 安全深度替换：只修改叶子节点文本，不破坏 HTML 节点和布局
+    // Secure depth replacement: Modify leaf node text only to maintain DOM structure and layout
     const findAndReplaceText = (currentRoot: Document | ShadowRoot | HTMLElement) => {
       const allElements = currentRoot.querySelectorAll('*');
       
       allElements.forEach((el) => {
         const htmlEl = el as HTMLElement;
 
-        // 穿透子 Shadow DOM (采用类型安全的方式，解决 pnpm build 报错问题)
+        // Traverse into Shadow DOM
         if (htmlEl.shadowRoot) {
           findAndReplaceText(htmlEl.shadowRoot);
         }
 
-        // 1. 处理 Powered by
-        if (htmlEl.textContent && htmlEl.textContent.includes('Powered by')) {
-          // 只改动没有任何子元素的纯文本标签，防止顺带删掉外部大盒子
-          if (htmlEl.children.length === 0) {
-            htmlEl.textContent = 'MER DEX protects your assets';
-          }
+        const text = htmlEl.textContent || '';
+
+        // 1. Handle "Powered by" text
+        if (text.includes('Powered by') && htmlEl.children.length === 0) {
+          htmlEl.textContent = 'MER DEX protects your assets';
           if (htmlEl.parentElement) {
             const icons = htmlEl.parentElement.querySelectorAll('svg, img');
             icons.forEach(icon => ((icon as HTMLElement).style.display = 'none'));
           }
         }
 
-        // 2. 处理 Ultra Swap 描述文案
-        if (htmlEl.textContent && htmlEl.textContent.includes('Seamlessly integrate')) {
-          // 核心修正：仅当它是一个最底层的纯文本容器时，才改写内容，确保不破坏包裹它的 UI 样式
-          if (htmlEl.children.length === 0) {
-            htmlEl.textContent = 'Aggregate multi-DEX services and capture token information MER DEX provides you with a safe and efficient trading experience!';
-          }
+        // 2. Handle "Ultra Swap" description
+        if (text.includes('Seamlessly integrate') && htmlEl.children.length === 0) {
+          htmlEl.textContent = 'Aggregate multi-DEX services and capture token information MER DEX provides you with a safe and efficient trading experience!';
+        }
+
+        // 3. Handle "Swap fees" and its subtext
+        if (text.trim() === 'Swap fees' && htmlEl.children.length === 0) {
+          htmlEl.textContent = 'MER DEX';
+        }
+        if (text.trim() === 'Earn swap fees easily.' && htmlEl.children.length === 0) {
+          htmlEl.textContent = 'MER DEX makes it easy for you to trade!';
         }
       });
     };
