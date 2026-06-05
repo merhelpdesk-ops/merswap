@@ -1,15 +1,19 @@
-const findAndReplaceText = (currentRoot: Document | ShadowRoot | HTMLElement) => {
+const findAndReplaceText = (currentRoot: any) => {
+  if (!currentRoot || typeof currentRoot.querySelectorAll !== 'function') return;
+
   const allElements = currentRoot.querySelectorAll('*');
   
-  allElements.forEach((el) => {
+  allElements.forEach((el: Element) => {
     const htmlEl = el as HTMLElement;
 
-    if (htmlEl.shadowRoot) {
-      findAndReplaceText(htmlEl.shadowRoot as ShadowRoot);
+    // Use 'in' operator to safely check for shadowRoot
+    if ('shadowRoot' in htmlEl && htmlEl.shadowRoot) {
+      findAndReplaceText(htmlEl.shadowRoot);
     }
 
     const text = htmlEl.textContent || '';
 
+    // Only process leaf nodes
     if (htmlEl.children.length === 0) {
       if (text.includes('Powered by')) {
         htmlEl.textContent = 'MER DEX protects your assets';
