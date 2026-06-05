@@ -55,37 +55,40 @@ const IntegratedPlugin = memo(() => {
     const targetContainer = document.getElementById('target-container');
     if (!targetContainer) return;
 
-    // 核心重写：深度优先递归穿透所有潜在的 Shadow DOM 节点
+    // 安全深度替换：只修改叶子节点文本，不破坏 HTML 节点和布局
     const findAndReplaceText = (currentRoot: Document | ShadowRoot | HTMLElement) => {
-      // 1. 获取当前层级下的所有子元素
       const allElements = currentRoot.querySelectorAll('*');
       
       allElements.forEach((el) => {
         const htmlEl = el as HTMLElement;
 
-        // 2. 检查是否有子 Shadow DOM，如果有，递归钻进去
+        // 穿透子 Shadow DOM (采用类型安全的方式，解决 pnpm build 报错问题)
         if (htmlEl.shadowRoot) {
           findAndReplaceText(htmlEl.shadowRoot);
         }
 
-        // 3. 处理 "Powered by" 文字及图标隐藏
+        // 1. 处理 Powered by
         if (htmlEl.textContent && htmlEl.textContent.includes('Powered by')) {
-          htmlEl.textContent = 'MER DEX protects your assets';
+          // 只改动没有任何子元素的纯文本标签，防止顺带删掉外部大盒子
+          if (htmlEl.children.length === 0) {
+            htmlEl.textContent = 'MER DEX protects your assets';
+          }
           if (htmlEl.parentElement) {
             const icons = htmlEl.parentElement.querySelectorAll('svg, img');
             icons.forEach(icon => ((icon as HTMLElement).style.display = 'none'));
           }
         }
 
-        // 4. 精准捕获并强制修改 Ultra Swap 的核心描述文案
+        // 2. 处理 Ultra Swap 描述文案
         if (htmlEl.textContent && htmlEl.textContent.includes('Seamlessly integrate')) {
-          // 清空子元素直接赋文本内容，防止由于内部标签导致匹配断开
-          htmlEl.innerText = 'Aggregate multi-DEX services and capture token information MER DEX provides you with a safe and efficient trading experience!';
+          // 核心修正：仅当它是一个最底层的纯文本容器时，才改写内容，确保不破坏包裹它的 UI 样式
+          if (htmlEl.children.length === 0) {
+            htmlEl.textContent = 'Aggregate multi-DEX services and capture token information MER DEX provides you with a safe and efficient trading experience!';
+          }
         }
       });
     };
 
-    // 监听整个文档和插件容器的树形变化，确保在加载、切页、异步渲染时文字随时被捕获替换
     const observer = new MutationObserver(() => {
       findAndReplaceText(document);
     });
@@ -96,7 +99,6 @@ const IntegratedPlugin = memo(() => {
       characterData: true 
     });
     
-    // 初始化时立刻执行一次
     findAndReplaceText(document);
 
     return () => observer.disconnect();
