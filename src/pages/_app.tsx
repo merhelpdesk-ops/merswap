@@ -18,21 +18,18 @@ import V2SexyChameleonText from 'src/components/SexyChameleonText/V2SexyChameleo
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { setPluginInView } from 'src/stores/jotai-plugin-in-view';
 import { cn } from 'src/misc/cn';
-import { PluginGroup } from 'src/content/PluginGroup';
 import SideDrawer from 'src/components/SideDrawer/SideDrawer';
 import JupiterLogo from 'src/icons/JupiterLogo';
 import CloseIcon from 'src/icons/CloseIcon';
 import { Upsell } from 'src/components/Upsell';
+import { PluginGroup } from 'src/content/PluginGroup';
 
 const isDevNodeENV = process.env.NODE_ENV === 'development';
 const isDeveloping = isDevNodeENV && typeof window !== 'undefined';
-// In NextJS preview env settings
 const isPreview = Boolean(process.env.NEXT_PUBLIC_IS_NEXT_PREVIEW);
 if ((isDeveloping || isPreview) && typeof window !== 'undefined') {
-  // Initialize an empty value, simulate webpack IIFE when imported
   (window as any).Jupiter = {};
 
-  // Perform local fetch on development, and next preview
   Promise.all([import('../library'), import('../index')]).then((res) => {
     const [libraryProps, rendererProps] = res;
 
@@ -69,13 +66,10 @@ export default function App() {
   const [isSideDrawerOpen, setIsSideDrawerOpen] = useState(false);
   const [sideDrawerTab, setSideDrawerTab] = useState<'config' | 'snippet'>('config');
 
-  // 纯 JavaScript 深度清理脚本：无报错风险，强行渗透 Shadow DOM 并抹除 Jupiter 标志
   useEffect(() => {
     const cleanJupiterAssets = () => {
-      // 1. 渗透 Shadow DOM 节点
       const terminalContainers = document.querySelectorAll('#jupiter-terminal, .jupiter-terminal, [class*="terminal"]');
       terminalContainers.forEach((container) => {
-        // 抹除内部的所有 SVG 图标
         const svgs = container.querySelectorAll('svg');
         svgs.forEach((svg) => {
           if (svg.innerHTML.includes('path') || svg.closest('[class*="header"]') || svg.closest('[class*="Header"]')) {
@@ -86,7 +80,6 @@ export default function App() {
           }
         });
 
-        // 深度递归进入内部可能存在的影子节点
         if (container.shadowRoot) {
           const shadowSvgs = container.shadowRoot.querySelectorAll('svg');
           shadowSvgs.forEach((svg) => {
@@ -97,7 +90,6 @@ export default function App() {
         }
       });
 
-      // 2. 扫描并物理抹除任何包含残余默认文本的元素
       const elements = document.querySelectorAll('span, p, div');
       elements.forEach((el) => {
         if (el.textContent && el.textContent.includes('Jupiter renders as')) {
@@ -107,10 +99,8 @@ export default function App() {
       });
     };
 
-    // 执行清理
     cleanJupiterAssets();
 
-    // 监听页面元素渲染
     const observer = new MutationObserver(() => {
       cleanJupiterAssets();
     });
@@ -123,7 +113,6 @@ export default function App() {
     return () => observer.disconnect();
   }, [displayMode]);
 
-  // Cleanup on tab change
   useEffect(() => {
     if (window.Jupiter._instance) {
       window.Jupiter._instance = null;
@@ -139,7 +128,6 @@ export default function App() {
   const { control } = methods;
   const simulateWalletPassthrough = useWatch({ control, name: 'simulateWalletPassthrough' });
 
-  // Solflare wallet adapter comes with Metamask Snaps supports
   const wallets = useMemo(() => [new UnsafeBurnerWalletAdapter(), new SolflareWalletAdapter()], []);
 
   const ShouldWrapWalletProvider = useMemo(() => {
@@ -167,7 +155,6 @@ export default function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* 移除了错误的 CSS 选择器语法，改为纯标准 CSS，确保 Vercel 100% 顺畅打包 */}
       <style dangerouslySetInnerHTML={{__html: `
         #jupiter-terminal svg:first-of-type,
         .jupiter-terminal svg:first-of-type,
@@ -211,7 +198,6 @@ export default function App() {
       />
       <FormProvider {...methods}>
         <div className="bg-landing-bg h-screen w-screen max-w-screen overflow-x-hidden flex flex-col justify-between gap-y-10">
-          {/* Side Drawer */}
           <SideDrawer isOpen={isSideDrawerOpen} setIsOpen={setIsSideDrawerOpen}>
             <div className="flex flex-col h-full">
               <div className="flex justify-between items-center py-4 px-4 text-white gap-2 border-b border-white/10">
