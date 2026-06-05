@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import JupiterLogo from 'src/icons/JupiterLogo';
 
 interface AppHeaderProps {
   isSideDrawerOpen?: boolean;
@@ -25,7 +24,7 @@ const AppHeader: React.FC<AppHeaderProps> = () => {
       <div className="flex items-center justify-between w-full bg-landing-bg">
         <div className="flex items-center p-4">
           <h1 className="flex items-center text-lg font-semibold text-white">
-              <JupiterLogo/>
+              {/* 已成功下掉 JupiterLogo */}
               <span className="ml-3">MERHelpDesk</span>
             </h1>
         </div>
