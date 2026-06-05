@@ -239,7 +239,7 @@ export default function App() {
                       </div>
                       <span className="flex justify-center text-center text-xs text-[#9D9DA6] mb-2">
                         {displayMode === 'modal' ? 'Jupiter renders as a modal and takes up the whole screen.' : null}
-                        {displayMode === 'integrated' ? 'Jupiter renders as a part of your dApp.' : null}
+                        {displayMode === 'integrated' ? 'MER Global platform leads the development' : null}
                         {displayMode === 'widget'
                           ? 'Jupiter renders as part of a widget that can be placed at different positions on your dApp.'
                           : null}
