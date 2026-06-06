@@ -12,6 +12,8 @@
         if (document.readyState === 'complete') {
           console.log(window.Jupiter.init);
           window.Jupiter.init({
+            displayMode: 'integrated',
+            integratedTargetId: 'jupiter-plugin'
           });
         }
       });
