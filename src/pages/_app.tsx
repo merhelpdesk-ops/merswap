@@ -51,6 +51,12 @@ const PLUGIN_MODE: { label: string; value: IInit['displayMode'] }[] = [
   },
 ];
 
+const PATCHED_FORM_CONFIG = {
+  ...INITIAL_FORM_CONFIG,
+  referralAccount: '',
+  referralFeeBps: 0,
+};
+
 export default function App() {
   const [displayMode, setDisplayMode] = useState<IInit['displayMode']>('integrated');
   const [isSideDrawerOpen, setIsSideDrawerOpen] = useState(false);
@@ -71,4 +77,4 @@ export default function App() {
         });
 
         if (container.shadowRoot) {
-          const shadowSvgs = container.shadowRoot
+          const shadowSvgs =
