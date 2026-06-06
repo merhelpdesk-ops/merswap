@@ -46,22 +46,16 @@ const queryClient = new QueryClient({
   },
 });
 
+// ⭐ 1. 数组砍到只剩 Integrated
 const PLUGIN_MODE: { label: string; value: IInit['displayMode'] }[] = [
-  {
-    label: 'Modal',
-    value: 'modal',
-  },
   {
     label: 'Integrated',
     value: 'integrated',
   },
-  {
-    label: 'Widget',
-    value: 'widget',
-  },
 ];
 
 export default function App() {
+  // ⭐ 2. 状态强行锁死在 integrated
   const [displayMode, setDisplayMode] = useState<IInit['displayMode']>('integrated');
   const [isSideDrawerOpen, setIsSideDrawerOpen] = useState(false);
   const [sideDrawerTab, setSideDrawerTab] = useState<'config' | 'snippet'>('config');
@@ -257,7 +251,9 @@ export default function App() {
                 <div className="max-w-[420px] mt-8 rounded-3xl flex flex-col md:flex-row w-full relative border border-white/10">
                   <ShouldWrapWalletProvider>
                     <div className=" h-full w-full rounded-xl flex flex-col">
-                      <div className="flex flex-row justify-between py-3 px-2 border-b border-white/10">
+                      
+                      {/* ⭐ 3. 将 className 改为 hidden，直接从视觉和物理层面上拔掉这三个页签栏 */}
+                      <div className="hidden flex-row justify-between py-3 px-2 border-b border-white/10">
                         {PLUGIN_MODE.map((mode) => (
                           <button
                             key={mode.value}
