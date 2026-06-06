@@ -1,5 +1,6 @@
 @tailwind components;
 @tailwind utilities;
+
 :root {
   --jupiter-plugin-primary: 199, 242, 132;
   --jupiter-plugin-background: 0, 0, 0;
@@ -8,6 +9,7 @@
   --jupiter-plugin-interactive: 33, 42, 54;
   --jupiter-plugin-module: 16, 23, 31;
 }
+
 #jupiter-plugin * {
   box-sizing: border-box;
   font-family: Inter, sans-serif;
@@ -17,7 +19,26 @@
   outline: none;
 }
 
-/* JupButton border gradient */
+[class*="launcher"],
+[class*="Launcher"],
+.jupiter-terminal-launcher,
+.jup-terminal-launcher {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+[class*="launcher"] svg,
+[class*="Launcher"] svg,
+.jupiter-terminal-launcher svg,
+.jup-terminal-launcher svg {
+  display: none !important;
+}
+
 #jupiter-plugin .jup-gradient::before {
   content: '';
   position: absolute;
@@ -45,7 +66,6 @@
   display: none;
 }
 
-/* Custom scroll bar */
 .webkit-scrollbar::-webkit-scrollbar {
   width: 8px;
 }
@@ -57,22 +77,6 @@
   background: #979797;
 }
 
-#jupiter-plugin .jup-gradient::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: 0.5rem;
-  padding: 2px;
-  background: linear-gradient(91.26deg, #fcc00a 15.73%, #4ebae9 83.27%);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  -webkit-mask-composite: source-out;
-}
-
-  /* Add tooltip functionality */
 .jupiter-tooltip {
   @apply invisible absolute;
   @apply bg-black text-primary-text p-2 rounded-lg;
