@@ -19,7 +19,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { setPluginInView } from 'src/stores/jotai-plugin-in-view';
 import { cn } from 'src/misc/cn';
 import SideDrawer from 'src/components/SideDrawer/SideDrawer';
-import JupiterLogo from 'src/icons/JupiterLogo';
 import CloseIcon from 'src/icons/CloseIcon';
 import { Upsell } from 'src/components/Upsell';
 import { PluginGroup } from 'src/content/PluginGroup';
@@ -46,7 +45,6 @@ const queryClient = new QueryClient({
   },
 });
 
-// ⭐ 1. 数组砍到只剩 Integrated
 const PLUGIN_MODE: { label: string; value: IInit['displayMode'] }[] = [
   {
     label: 'Integrated',
@@ -55,7 +53,6 @@ const PLUGIN_MODE: { label: string; value: IInit['displayMode'] }[] = [
 ];
 
 export default function App() {
-  // ⭐ 2. 状态强行锁死在 integrated
   const [displayMode, setDisplayMode] = useState<IInit['displayMode']>('integrated');
   const [isSideDrawerOpen, setIsSideDrawerOpen] = useState(false);
   const [sideDrawerTab, setSideDrawerTab] = useState<'config' | 'snippet'>('config');
@@ -194,10 +191,10 @@ export default function App() {
         <div className="bg-landing-bg h-screen w-screen max-w-screen overflow-x-hidden flex flex-col justify-between gap-y-10">
           <SideDrawer isOpen={isSideDrawerOpen} setIsOpen={setIsSideDrawerOpen}>
             <div className="flex flex-col h-full">
+              {/* ⭐ 这里彻底拔掉了原先的 JupiterLogo 标签，直接替换为我们自己的品牌名 */}
               <div className="flex justify-between items-center py-4 px-4 text-white gap-2 border-b border-white/10">
-                <h1 className="flex items-center text-lg font-semibold text-white">
-                  <JupiterLogo />
-                  <span className="ml-3">Jupiter</span>
+                <h1 className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-lime-400 bg-clip-text text-transparent tracking-wide">
+                  MERDEX
                 </h1>
                 <button
                   className="p-2 text-white/50 hover:text-gray-300 transition-colors"
@@ -252,7 +249,6 @@ export default function App() {
                   <ShouldWrapWalletProvider>
                     <div className=" h-full w-full rounded-xl flex flex-col">
                       
-                      {/* ⭐ 3. 将 className 改为 hidden，直接从视觉和物理层面上拔掉这三个页签栏 */}
                       <div className="hidden flex-row justify-between py-3 px-2 border-b border-white/10">
                         {PLUGIN_MODE.map((mode) => (
                           <button
