@@ -146,6 +146,7 @@ export default function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      {/* ⭐ 核心样式修改：在此拦截并强行掐灭整个 Referral 的表单输入块、指南链接和分割线 */}
       <style dangerouslySetInnerHTML={{__html: `
         #jupiter-terminal svg:first-of-type,
         .jupiter-terminal svg:first-of-type,
@@ -162,6 +163,23 @@ export default function App() {
         .bg-landing-bg > div span.text-xs {
           display: none !important;
           opacity: 0 !important;
+        }
+
+        /* 🚀 物理强行切除侧边栏中包含 referralAccount 和 referralFeeBps 字段的所有父容器层级 */
+        .overflow-y-auto div:has(input[name="referralAccount"]),
+        .overflow-y-auto div:has(input[name="referralFeeBps"]),
+        .overflow-y-auto div:has(a[href*="referral"]),
+        .overflow-y-auto div:has(> input[name*="referral"]),
+        .overflow-y-auto p:contains("Referral"),
+        /* 同时顺便切掉推荐账户上下的边框分割线和相关文字节点 */
+        .overflow-y-auto div.border-b:has(+ div input[name*="referral"]) {
+          display: none !important;
+          height: 0 !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          opacity: 0 !important;
+          overflow: hidden !important;
+          visibility: hidden !important;
         }
       `}} />
 
@@ -191,7 +209,6 @@ export default function App() {
         <div className="bg-landing-bg h-screen w-screen max-w-screen overflow-x-hidden flex flex-col justify-between gap-y-10">
           <SideDrawer isOpen={isSideDrawerOpen} setIsOpen={setIsSideDrawerOpen}>
             <div className="flex flex-col h-full">
-              {/* ⭐ 这里彻底拔掉了原先的 JupiterLogo 标签，直接替换为我们自己的品牌名 */}
               <div className="flex justify-between items-center py-4 px-4 text-white gap-2 border-b border-white/10">
                 <h1 className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-lime-400 bg-clip-text text-transparent tracking-wide">
                   MERDEX
