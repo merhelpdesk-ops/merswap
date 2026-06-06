@@ -1,6 +1,5 @@
 @tailwind components;
 @tailwind utilities;
-
 :root {
   --jupiter-plugin-primary: 199, 242, 132;
   --jupiter-plugin-background: 0, 0, 0;
@@ -9,7 +8,6 @@
   --jupiter-plugin-interactive: 33, 42, 54;
   --jupiter-plugin-module: 16, 23, 31;
 }
-
 #jupiter-plugin * {
   box-sizing: border-box;
   font-family: Inter, sans-serif;
@@ -19,17 +17,7 @@
   outline: none;
 }
 
-#jupiter-plugin [class*="jupiter-terminal-launcher"],
-#jupiter-plugin [class*="jup-terminal-launcher"],
-#jupiter-plugin .jupiter-terminal-expand-button,
-#jupiter-plugin [class*="expand-icon"],
-#jupiter-plugin [class*="jupiter-logo"],
-#jupiter-plugin [class*="jup-logo"],
-#jupiter-plugin .jupiter-footer-powered-by,
-#jupiter-plugin svg[class*="jupiter-"] {
-  display: none !important;
-}
-
+/* JupButton border gradient */
 #jupiter-plugin .jup-gradient::before {
   content: '';
   position: absolute;
@@ -53,6 +41,11 @@
   display: none;
 }
 
+.hideScrollbar::-moz-scrollbar {
+  display: none;
+}
+
+/* Custom scroll bar */
 .webkit-scrollbar::-webkit-scrollbar {
   width: 8px;
 }
@@ -64,8 +57,25 @@
   background: #979797;
 }
 
+#jupiter-plugin .jup-gradient::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 0.5rem;
+  padding: 2px;
+  background: linear-gradient(91.26deg, #fcc00a 15.73%, #4ebae9 83.27%);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: source-out;
+}
+
+  /* Add tooltip functionality */
 .jupiter-tooltip {
-  @apply invisible absolute bg-black text-primary-text p-2 rounded-lg;
+  @apply invisible absolute;
+  @apply bg-black text-primary-text p-2 rounded-lg;
 }
 
 .jupiter-has-tooltip:hover .jupiter-tooltip {
