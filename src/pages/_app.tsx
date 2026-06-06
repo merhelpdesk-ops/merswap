@@ -1,80 +1,39 @@
-import { UnifiedWalletButton, UnifiedWalletProvider } from '@jup-ag/wallet-adapter';
-import { DefaultSeo } from 'next-seo';
-import React, { ReactNode, useEffect, useMemo, useState } from 'react';
+export const Upsell = () => {
+  return (
+    <div className="text-white grid  md:grid-cols-2 gap-4 px-2 mt-4 max-w-[700px] mx-auto">
+      <div className="bg-[#182220] rounded-xl p-4 relative h-[160px] flex flex-col gap-y-2 ">
+        <div className="text-xl font-semibold">Swap fees</div>
+        <div className="text-white/60 text-sm">Earn swap fees easily.</div>
 
-import 'tailwindcss/tailwind.css';
-import '../styles/globals.css';
+        <img src="/upsell/swap_fee.svg" alt="swap-fees" className="absolute top-0 right-0" />
+      </div>
 
-import AppHeader from 'src/components/AppHeader/AppHeader';
-import Footer from 'src/components/Footer/Footer';
+      {/* ⭐ 完美改写为 24/7 客服支持卡片，优化了弹性高度防止长文本爆框 */}
+      <div className="bg-[#151E31] rounded-xl p-4 relative gap-y-2 flex flex-col min-h-[160px] h-auto pb-6">
+        <div className="text-xl font-semibold w-[80%]">
+          MERHelpDesk 24/7 customer service support
+        </div>
+        <div className="text-white/60 w-[80%] text-sm leading-relaxed">
+          If you encounter any issues, please click the Twitter (X) icon at the bottom of the page and send us your questions. Our support team is available 24/7 and will do our best to resolve any problems you may have.
+        </div>
 
-import { SolflareWalletAdapter, UnsafeBurnerWalletAdapter } from '@solana/wallet-adapter-wallets';
-import { FormProvider, useForm, useWatch } from 'react-hook-form';
-import CodeBlocks from 'src/components/CodeBlocks/CodeBlocks';
-import FormConfigurator from 'src/components/FormConfigurator';
-import { IFormConfigurator, INITIAL_FORM_CONFIG } from 'src/constants';
-import { IInit } from 'src/types';
-import V2SexyChameleonText from 'src/components/SexyChameleonText/V2SexyChameleonText';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { setPluginInView } from 'src/stores/jotai-plugin-in-view';
-import { cn } from 'src/misc/cn';
-import SideDrawer from 'src/components/SideDrawer/SideDrawer';
-import CloseIcon from 'src/icons/CloseIcon';
-import { PluginGroup } from 'src/content/PluginGroup';
+        <img src="/upsell/customizable_options.svg" alt="customizable-options" className="absolute top-0 right-0" />
+      </div>
 
-const isDevNodeENV = process.env.NODE_ENV === 'development';
-const isDeveloping = isDevNodeENV && typeof window !== 'undefined';
-const isPreview = Boolean(process.env.NEXT_PUBLIC_IS_NEXT_PREVIEW);
-if ((isDeveloping || isPreview) && typeof window !== 'undefined') {
-  (window as any).Jupiter = {};
-
-  Promise.all([import('../library'), import('../index')]).then((res) => {
-    const [libraryProps, rendererProps] = res;
-
-    (window as any).Jupiter = libraryProps;
-    (window as any).JupiterRenderer = rendererProps;
-  });
-}
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-    },
-  },
-});
-
-const PLUGIN_MODE: { label: string; value: IInit['displayMode'] }[] = [
-  {
-    label: 'Integrated',
-    value: 'integrated',
-  },
-];
-
-const PATCHED_FORM_CONFIG = {
-  ...INITIAL_FORM_CONFIG,
-  referralAccount: '',
-  referralFeeBps: 0,
+      <div className="bg-[#002F25] rounded-xl p-4 relative h-[160px] flex flex-col gap-y-2">
+        <div className="text-xl font-semibold w-[80%]">Ultra Swap</div>
+        <div className="text-white/60 w-[80%] text-sm">
+          Seamlessly integrate end to end jup.ag swap experience with all Ultra features
+        </div>
+        <img src="/upsell/seemless_integration.svg" alt="ultra-swap" className="absolute top-0 right-0" />
+      </div>
+      <div className="bg-[#231B32] rounded-xl p-4 relative h-[160px] flex flex-col gap-y-2">
+        <div className="text-xl font-semibold w-[80%]">RPC-less</div>
+        <div className="text-white/60 w-[80%] text-sm">
+          All the Ultra goodness without any RPCs - we handle everything for you, including transaction sending
+        </div>
+        <img src="/upsell/rpc_less.svg" alt="rpc-less" className="absolute top-0 right-0" />
+      </div>
+    </div>
+  );
 };
-
-export default function App() {
-  const [displayMode, setDisplayMode] = useState<IInit['displayMode']>('integrated');
-  const [isSideDrawerOpen, setIsSideDrawerOpen] = useState(false);
-  const [sideDrawerTab, setSideDrawerTab] = useState<'config' | 'snippet'>('config');
-
-  useEffect(() => {
-    const cleanJupiterAssets = () => {
-      const terminalContainers = document.querySelectorAll('#jupiter-terminal, .jupiter-terminal, [class*="terminal"]');
-      terminalContainers.forEach((container) => {
-        const svgs = container.querySelectorAll('svg');
-        svgs.forEach((svg) => {
-          if (svg.innerHTML.includes('path') || svg.closest('[class*="header"]') || svg.closest('[class*="Header"]')) {
-            svg.style.setProperty('display', 'none', 'important');
-            svg.style.setProperty('width', '0px', 'important');
-            svg.style.setProperty('height', '0px', 'important');
-            svg.style.setProperty('opacity', '0', 'important');
-          }
-        });
-
-        if (container.shadowRoot) {
-          const shadowSvgs =
