@@ -281,7 +281,6 @@ export default function App() {
                         ))}
                       </div>
 
-                      {/* ⭐ 核心改动：把包裹着 Customize 按钮的区块彻底拿掉，保证面板头部清爽优雅 */}
                       <div className="flex flex-grow justify-center text-white/75 flex-col mx-auto px-2">
                         <div className="flex flex-row justify-end min-h-[24px] mt-2 items-center">
                           <div
