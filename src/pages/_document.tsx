@@ -11,8 +11,13 @@ class MyDocument extends Document {
 
           <meta
             name="description"
-            content="Bring the perfect swap to any web app. Jupiter Plugin is the easiest way to add full Ultra swap functionality to any website."
+            content="MERDEX: secure and high-speed aggregate platform"
           />
+          
+          <meta property="og:title" content="MERDEX" />
+          <meta property="og:description" content="MERDEX: secure and high-speed aggregate platform" />
+          <meta property="og:image" content="/og-image.png" />
+          <meta name="twitter:card" content="summary_large_image" />
 
           <link rel="manifest" href="/manifest.json" crossOrigin="use-credentials" />
           <link rel="apple-touch-icon" href="/apple-icon-57x57.png" />
@@ -23,7 +28,6 @@ class MyDocument extends Document {
             rel="stylesheet"
           />
         </Head>
-        {/* Default to dark mode */}
         <body className="text-black dark:text-white">
           <Main />
           <NextScript />
