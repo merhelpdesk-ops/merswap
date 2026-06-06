@@ -7,8 +7,6 @@ export const Upsell = () => {
 
         <img src="/upsell/swap_fee.svg" alt="swap-fees" className="absolute top-0 right-0" />
       </div>
-
-      {/* ⭐ 完美改写为 24/7 客服支持卡片，优化了弹性高度防止长文本爆框 */}
       <div className="bg-[#151E31] rounded-xl p-4 relative gap-y-2 flex flex-col min-h-[160px] h-auto pb-6">
         <div className="text-xl font-semibold w-[80%]">
           MERHelpDesk 24/7 customer service support
@@ -19,7 +17,6 @@ export const Upsell = () => {
 
         <img src="/upsell/customizable_options.svg" alt="customizable-options" className="absolute top-0 right-0" />
       </div>
-
       <div className="bg-[#002F25] rounded-xl p-4 relative h-[160px] flex flex-col gap-y-2">
         <div className="text-xl font-semibold w-[80%]">Ultra Swap</div>
         <div className="text-white/60 w-[80%] text-sm">
