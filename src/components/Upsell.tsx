@@ -7,10 +7,12 @@ export const Upsell = () => {
 
         <img src="/upsell/swap_fee.svg" alt="swap-fees" className="absolute top-0 right-0" />
       </div>
-      <div className="bg-[#151E31] rounded-xl p-4 relative gap-y-2 flex flex-col h-[160px]">
-        <div className="text-xl font-semibold w-[80%]">Customizable Options</div>
-        <div className="text-white/60 w-[80%] text-sm">
-          Multiple display options and <br /> other configurations to match <br /> your application&apos;s needs.
+      <div className="bg-[#151E31] rounded-xl p-4 relative gap-y-2 flex flex-col min-h-[160px] h-auto pb-6">
+        <div className="text-xl font-semibold w-[80%]">
+          MERHelpDesk 24/7 customer service support
+        </div>
+        <div className="text-white/60 w-[80%] text-sm leading-relaxed">
+          If you encounter any issues, please click the Twitter (X) icon at the bottom of the page and send us your questions. Our support team is available 24/7 and will do our best to resolve any problems you may have.
         </div>
 
         <img src="/upsell/customizable_options.svg" alt="customizable-options" className="absolute top-0 right-0" />
