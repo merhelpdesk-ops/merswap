@@ -19,10 +19,14 @@
   outline: none;
 }
 
+/* Global Heavy Override - Force removes Jupiter floating elements entirely from body */
 [class*="launcher"],
 [class*="Launcher"],
 .jupiter-terminal-launcher,
-.jup-terminal-launcher {
+.jup-terminal-launcher,
+.jupiter-terminal-expand-button,
+[class*="expand-icon"],
+div[style*="z-index"][style*="fixed"] {
   display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
