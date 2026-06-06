@@ -24,15 +24,8 @@ const WidgetPlugin = memo(() => {
 
   const launchPlugin = useCallback(() => {
     window.Jupiter.init({
-      displayMode: 'widget',
-      widgetStyle: {
-        position,
-        size,
-        offset: {
-          x: offsetX,
-          y: offsetY,
-        },
-      },
+      displayMode: 'integrated',
+      integratedTargetId: 'jupiter-plugin',
       formProps,
       enableWalletPassthrough: simulateWalletPassthrough,
       passthroughWalletContextState: simulateWalletPassthrough ? passthroughWalletContextState : undefined,
@@ -44,12 +37,8 @@ const WidgetPlugin = memo(() => {
     defaultExplorer,
     formProps,
     passthroughWalletContextState,
-    position,
     setShowModal,
     simulateWalletPassthrough,
-    size,
-    offsetX,
-    offsetY,
     branding,
   ]);
 
@@ -72,7 +61,7 @@ const WidgetPlugin = memo(() => {
         launchPlugin();
       }
     }, 200);
-  }, [isLoaded, position, size, launchPlugin]);
+  }, [isLoaded, launchPlugin]);
 
   // To make sure passthrough wallet are synced
   useEffect(() => {
@@ -86,111 +75,8 @@ const WidgetPlugin = memo(() => {
         <div className="relative mt-8 md:mt-0">
             <div className="bg-white/10 rounded-xl flex items-center justify-center w-full h-[216px]">
               <span className="text-xs text-white/50 text-center w-[70%]">
-                Click on the arrows to see how the Jupiter Widget will appear on your web browser.
-                <br />
-                Click on the logo to view the Jupiter Swap Modal.
+                Widget mode disabled. The swap box is now integrated into the container directly.
               </span>
-
-              {/* Top left  */}
-              <div
-                className={cn('absolute left-1 top-1 cursor-pointer hover:bg-black/20 rounded-full p-1', {
-                  'ring-1 ring-white/50': position === 'top-left',
-                })}
-                onClick={() => setPosition('top-left')}
-              >
-                <div className="rotate-45">
-                  <LeftArrowIcon width={24} height={24} />
-                </div>
-              </div>
-
-              {/* Top right  */}
-              <div
-                className={cn('absolute right-1 top-1 cursor-pointer hover:bg-black/20 rounded-full p-1', {
-                  'ring-1 ring-white/50': position === 'top-right',
-                })}
-                onClick={() => setPosition('top-right')}
-              >
-                <div className="rotate-[135deg]">
-                  <LeftArrowIcon width={24} height={24} />
-                </div>
-              </div>
-
-              {/* Bottom left  */}
-              <div
-                className={cn('absolute left-1 bottom-1 cursor-pointer hover:bg-black/20 rounded-full p-1', {
-                  'ring-1 ring-white/50': position === 'bottom-left',
-                })}
-                onClick={() => setPosition('bottom-left')}
-              >
-                <div className="-rotate-45">
-                  <LeftArrowIcon width={24} height={24} />
-                </div>
-              </div>
-
-              {/* Bottom right  */}
-              <div
-                className={cn('absolute right-1 bottom-1 cursor-pointer hover:bg-black/20 rounded-full p-1', {
-                  'ring-1 ring-white/50': position === 'bottom-right',
-                })}
-                onClick={() => setPosition('bottom-right')}
-              >
-                <div className="rotate-[225deg]">
-                  <LeftArrowIcon width={24} height={24} />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-between items-center">
-            <span className="text-sm font-semibold">Set Size</span>
-
-            <div className="space-x-2 p-1.5 mt-2 bg-black/30 rounded-xl">
-              <JupButton
-                size="sm"
-                onClick={() => {
-                  setSize('sm');
-                }}
-                className={size === 'sm' ? 'bg-white/10' : 'opacity-20 hover:opacity-70'}
-              >
-                <div className="flex items-center space-x-2 text-xs">
-                  <div>Small</div>
-                </div>
-              </JupButton>
-              <JupButton
-                size="sm"
-                onClick={() => {
-                  setSize('default');
-                }}
-                className={size === 'default' ? 'bg-white/10' : 'opacity-20 hover:opacity-70'}
-              >
-                <div className="flex items-center space-x-2 text-xs">
-                  <div>Default</div>
-                </div>
-              </JupButton>
-            </div>
-          </div>
-
-          <div className="flex justify-between items-center mt-4">
-            <span className="text-sm font-semibold">Set Offset</span>
-            <div className="flex space-x-4">
-              <div className="flex items-center space-x-2">
-                <span className="text-xs text-white/50">X:</span>
-                <input
-                  type="number"
-                  value={offsetX}
-                  onChange={(e) => setOffsetX(Number(e.target.value))}
-                  className="w-16 px-2 py-1 bg-black/30 rounded text-xs text-white"
-                />
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-xs text-white/50">Y:</span>
-                <input
-                  type="number"
-                  value={offsetY}
-                  onChange={(e) => setOffsetY(Number(e.target.value))}
-                  className="w-16 px-2 py-1 bg-black/30 rounded text-xs text-white"
-                />
-              </div>
             </div>
           </div>
       </div>
