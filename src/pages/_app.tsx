@@ -146,7 +146,6 @@ export default function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* ⭐ 核心样式修改：在此拦截并强行掐灭整个 Referral 的表单输入块、指南链接和分割线 */}
       <style dangerouslySetInnerHTML={{__html: `
         #jupiter-terminal svg:first-of-type,
         .jupiter-terminal svg:first-of-type,
@@ -165,13 +164,11 @@ export default function App() {
           opacity: 0 !important;
         }
 
-        /* 🚀 物理强行切除侧边栏中包含 referralAccount 和 referralFeeBps 字段的所有父容器层级 */
         .overflow-y-auto div:has(input[name="referralAccount"]),
         .overflow-y-auto div:has(input[name="referralFeeBps"]),
         .overflow-y-auto div:has(a[href*="referral"]),
         .overflow-y-auto div:has(> input[name*="referral"]),
         .overflow-y-auto p:contains("Referral"),
-        /* 同时顺便切掉推荐账户上下的边框分割线和相关文字节点 */
         .overflow-y-auto div.border-b:has(+ div input[name*="referral"]) {
           display: none !important;
           height: 0 !important;
@@ -284,17 +281,9 @@ export default function App() {
                         ))}
                       </div>
 
-                      <div className="flex flex-grow  justify-center text-white/75 flex-col mx-auto px-2 ">
-                        <div className="flex flex-row justify-between  min-h-[57px] items-center">
-                          <div className="flex justify-between flex-row">
-                            <button
-                              className="relative text-sm text-landing-primary font-semibold p-1  rounded-lg underline"
-                              onClick={() => setIsSideDrawerOpen(true)}
-                            >
-                              Customize
-                              <span className="absolute top-1 -right-0.5 h-1.5 w-1.5 rounded-full bg-landing-primary animate-pulse "></span>
-                            </button>
-                          </div>
+                      {/* ⭐ 核心改动：把包裹着 Customize 按钮的区块彻底拿掉，保证面板头部清爽优雅 */}
+                      <div className="flex flex-grow justify-center text-white/75 flex-col mx-auto px-2">
+                        <div className="flex flex-row justify-end min-h-[24px] mt-2 items-center">
                           <div
                             className={cn('text-white text-center', {
                               hidden: !simulateWalletPassthrough,
