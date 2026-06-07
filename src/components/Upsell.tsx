@@ -1,10 +1,10 @@
 import React from 'react';
-import { useLanguage } from 'src/contexts/LanguageContext'; // 引入全局上下文钩子
+// 已修复引用路径：指向你在 components 文件夹下创建的那个文件
+import { useLanguage } from 'src/components/LanguageContext'; 
 
 export const Upsell = () => {
-  const { lang } = useLanguage(); // 获取当前语言状态
+  const { lang } = useLanguage(); 
 
-  // 语言字典
   const t = {
     en: {
       swap: { title: 'Swap fees', desc: 'Earn swap fees easily.' },
@@ -32,7 +32,6 @@ export const Upsell = () => {
     }
   };
 
-  // 如果 lang 不在字典里，默认用英文
   const content = t[lang as keyof typeof t] || t.en;
 
   return (
@@ -40,24 +39,28 @@ export const Upsell = () => {
       <div className="bg-[#182220] rounded-xl p-4 relative h-[160px] flex flex-col gap-y-2 ">
         <div className="text-xl font-semibold">{content.swap.title}</div>
         <div className="text-white/60 text-sm">{content.swap.desc}</div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/upsell/swap_fee.svg" alt="swap-fees" className="absolute top-0 right-0" />
       </div>
 
       <div className="bg-[#151E31] rounded-xl p-4 relative gap-y-2 flex flex-col min-h-[160px] h-auto pb-6">
         <div className="text-xl font-semibold w-[80%]">{content.support.title}</div>
         <div className="text-white/60 w-[80%] text-sm leading-relaxed">{content.support.desc}</div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/upsell/customizable_options.svg" alt="customizable-options" className="absolute top-0 right-0" />
       </div>
 
       <div className="bg-[#002F25] rounded-xl p-4 relative h-[160px] flex flex-col gap-y-2">
         <div className="text-xl font-semibold w-[80%]">{content.ultra.title}</div>
         <div className="text-white/60 w-[80%] text-sm">{content.ultra.desc}</div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/upsell/seemless_integration.svg" alt="ultra-swap" className="absolute top-0 right-0" />
       </div>
 
       <div className="bg-[#231B32] rounded-xl p-4 relative gap-y-2 flex flex-col min-h-[160px] h-auto pb-6">
         <div className="text-xl font-semibold w-[80%]">{content.oneStop.title}</div>
         <div className="text-white/60 w-[80%] text-sm leading-relaxed">{content.oneStop.desc}</div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/upsell/rpc_less.svg" alt="rpc-less" className="absolute top-0 right-0" />
       </div>
     </div>
