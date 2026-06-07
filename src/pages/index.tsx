@@ -50,6 +50,7 @@ const PLUGIN_MODE: { label: string; value: IInit['displayMode'] }[] = [
   },
 ];
 
+// 本土化多语系大字典
 const translations: Record<string, string> = {
   en: 'Swap',
   zh: '兑换',
@@ -66,6 +67,7 @@ function AppContent() {
 
   useEffect(() => {
     const updateTargetText = () => {
+      // 优先从全局显式配置或上下文状态中读取语言
       const current = langContext?.language || langContext?.locale || 'en';
       let mappedLang = 'en';
 
@@ -81,6 +83,7 @@ function AppContent() {
       const terminalContainers = document.querySelectorAll('#jupiter-terminal, .jupiter-terminal, [class*="terminal"]');
       
       const replaceText = (root: Element | ShadowRoot) => {
+        // 1. 针对所有按钮元素进行深层遍历与覆盖
         const buttons = root.querySelectorAll('button');
         buttons.forEach((btn) => {
           if (btn.querySelector('svg') || btn.getAttribute('aria-label')) return;
@@ -90,6 +93,7 @@ function AppContent() {
           }
         });
 
+        // 2. 针对所有叶子文本容器进行强制同步
         const textElements = root.querySelectorAll('div, span, p');
         textElements.forEach((el) => {
           if (el.children.length === 0) {
@@ -101,6 +105,7 @@ function AppContent() {
         });
       };
 
+      // 执行多层穿透清洗
       replaceText(document.body);
       terminalContainers.forEach((container) => {
         replaceText(container);
@@ -110,6 +115,7 @@ function AppContent() {
       });
     };
 
+    // 毫秒级轮询执行，确保异步加载的节点被实时替换
     updateTargetText();
     const timer = setInterval(updateTargetText, 100);
 
@@ -185,7 +191,6 @@ function AppContent() {
 
   const wallets = useMemo(() => [new UnsafeBurnerWalletAdapter(), new SolflareWalletAdapter()], []);
 
-  // 核心修复点：将此前被截断破坏的 useMemo 完整拼回
   const ShouldWrapWalletProvider = useMemo(() => {
     return simulateWalletPassthrough
       ? ({ children }: { children: ReactNode }) => (
