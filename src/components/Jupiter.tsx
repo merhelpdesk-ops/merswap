@@ -8,13 +8,19 @@ import SwappingScreen from './screens/SwappingScreen';
 import WalletScreen from './screens/WalletScreen';
 import { BrandingProvider } from 'src/contexts/BrandingProvider';
 
+// 🌟 1. 成功引入大导航栏和多语言 Provider（注意路径已为您调至完美）
+import AppHeader from './AppHeader/AppHeader'; 
+import { LanguageProvider } from './LanguageContext'; 
+
 const Content = () => {
   const { screen } = useScreenState();
 
-  // ID is required for scoped preflight by tailwind to work
   return (
     <div id="jupiter-plugin" className=" h-full bg-background relative flex flex-col justify-between">
       <div>
+        {/* 🌟 2. 在这里渲染大导航栏，让它雷打不动地出现在最顶端 */}
+        <AppHeader />
+
         {screen === 'Initial' ? (
           <>
             <Header />
@@ -35,11 +41,14 @@ const Content = () => {
 
 const JupiterApp = (props: IInit) => {
   return (
-    <SwapContextProvider {...props}>
-      <BrandingProvider {...props}>
-        <Content />
-      </BrandingProvider>
-    </SwapContextProvider>
+    // 🌟 3. 用 LanguageProvider 完美包覆最外层，注入全局多语言信号
+    <LanguageProvider>
+      <SwapContextProvider {...props}>
+        <BrandingProvider {...props}>
+          <Content />
+        </BrandingProvider>
+      </SwapContextProvider>
+    </LanguageProvider>
   );
 };
 
