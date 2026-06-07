@@ -30,28 +30,33 @@ const AppHeader: React.FC<AppHeaderProps> = () => {
           </h1>
         </div>
 
-        <div className="flex items-center space-x-3 text-sm text-white">
+        {/* 语言切换按钮组，增加了更清晰的高亮和鼠标悬停效果 */}
+        <div className="flex items-center space-x-4 text-sm">
           <button 
+            type="button"
             onClick={() => setLang('en')} 
-            className={lang === 'en' ? 'text-white font-bold' : 'text-gray-400'}
+            className={`transition-colors cursor-pointer ${lang === 'en' ? 'text-green-400 font-bold' : 'text-gray-400 hover:text-white'}`}
           >
             English
           </button>
           <button 
+            type="button"
             onClick={() => setLang('cn')} 
-            className={lang === 'cn' ? 'text-white font-bold' : 'text-gray-400'}
+            className={`transition-colors cursor-pointer ${lang === 'cn' ? 'text-green-400 font-bold' : 'text-gray-400 hover:text-white'}`}
           >
             简体中文
           </button>
           <button 
+            type="button"
             onClick={() => setLang('tw')} 
-            className={lang === 'tw' ? 'text-white font-bold' : 'text-gray-400'}
+            className={`transition-colors cursor-pointer ${lang === 'tw' ? 'text-green-400 font-bold' : 'text-gray-400 hover:text-white'}`}
           >
             繁體中文
           </button>
           <button 
+            type="button"
             onClick={() => setLang('ko')} 
-            className={lang === 'ko' ? 'text-white font-bold' : 'text-gray-400'}
+            className={`transition-colors cursor-pointer ${lang === 'ko' ? 'text-green-400 font-bold' : 'text-gray-400 hover:text-white'}`}
           >
             한국어
           </button>
