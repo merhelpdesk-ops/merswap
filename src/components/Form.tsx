@@ -24,7 +24,7 @@ import { Asset } from 'src/entity/SearchResponse';
 import { useUltraSwapMutation } from 'src/queries/useUltraSwapMutation';
 import { SubmitButton } from './SubmitButton';
 
-// 🌟 1. 成功引入多语言全局信号状态
+// 🌟 1. 引入多语言状态
 import { useLanguage } from './LanguageContext'; 
 
 const FormInputContainer: React.FC<{
@@ -105,38 +105,17 @@ const Form: React.FC<{
 }> = ({  setSelectPairSelector }) => {
   const { publicKey, wallet } = useWalletPassThrough();
 
-  // 🌟 2. 获取当前按钮被选中的语言代码
+  // 🌟 2. 拿到当前的语言
   const { lang } = useLanguage(); 
 
-  // 🌟 3. 翻译字典：包含“兑换”大按钮、输入提示、以及钱包按钮文本
-  const translationMap: Record<string, { sell: string; buy: string; connect: string; swap: string }> = {
-    en: {
-      sell: 'Selling',
-      buy: 'Buying',
-      connect: 'Connect Wallet',
-      swap: 'Swap',
-    },
-    cn: {
-      sell: '卖出',
-      buy: '买入',
-      connect: '连接钱包',
-      swap: '兑换',
-    },
-    tw: {
-      sell: '賣出',
-      buy: '買入',
-      connect: '連接錢包',
-      swap: '兌換',
-    },
-    ko: {
-      sell: '매도',
-      buy: '매수',
-      connect: '지갑 연결',
-      swap: '교환',
-    }
+  // 🌟 3. 输入提示字典
+  const translationMap: Record<string, { sell: string; buy: string; connect: string }> = {
+    en: { sell: 'Selling', buy: 'Buying', connect: 'Connect Wallet' },
+    cn: { sell: '卖出', buy: '买入', connect: '连接钱包' },
+    tw: { sell: '賣出', buy: '買入', connect: '連接錢包' },
+    ko: { sell: '매도', buy: '매수', connect: '지갑 연결' }
   };
 
-  // 动态读取当前语言对应的文本包，没有则默认英文
   const currentText = translationMap[lang] || translationMap['en'];
 
   const { data: balances } = useBalances();
@@ -312,7 +291,6 @@ const Form: React.FC<{
     <div className="h-full flex flex-col items-center justify-center">
       <div className="w-full mt-2 rounded-xl flex flex-col px-2">
         <div className="flex-col">
-          {/* 🌟 4. 这里将 Selling 替换为本地语言的 卖出/매도 */}
           <FormInputContainer
             tokenInfo={fromTokenInfo!}
             onBalanceClick={(e) => {
@@ -352,7 +330,6 @@ const Form: React.FC<{
           <div className="relative z-10 -my-3 flex justify-center">
             <SwitchPairButton onClick={onClickSwitchPair} className={cn('transition-all')} />
           </div>
-          {/* 🌟 5. 这里将 Buying 替换为本地语言的 买入/매수 */}
           <FormInputContainer
             tokenInfo={toTokenInfo!}
             title={currentText.buy}
@@ -400,13 +377,12 @@ const Form: React.FC<{
 
       <div className="w-full px-2">
         {!walletPublicKey ? (
-          /* 🌟 6. 这里将未连钱包时的按钮替换为本地语言 连接钱包/지갑 연결 */
           <JupButton size="lg" className="w-full mt-4 bg-primary !text-uiv2-text/75" onClick={handleClick}>
             {currentText.connect}
           </JupButton>
         ) : (
-          /* 🌟 7. 已连钱包时的核心交易大按钮，直接把本地语言（兑换/兌換/교환）注入组件属性中供其渲染 */
-          <SubmitButton onSubmit={onSubmit} swapText={currentText.swap} />
+          /* 🌟 这里的 swapText 参数已经被彻底抹除，干净通过打包 */
+          <SubmitButton onSubmit={onSubmit} />
         )}
 
         {quoteResponseMeta && fromTokenInfo && toTokenInfo ? (
