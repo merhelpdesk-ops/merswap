@@ -50,151 +50,15 @@ const PLUGIN_MODE: { label: string; value: IInit['displayMode'] }[] = [
   },
 ];
 
-const translations: Record<string, string> = {
-  en: 'Swap',
-  zh: '兑换',
-  tw: '兌換',
-  kr: '스왑',
-};
-
 function AppContent() {
   const [displayMode, setDisplayMode] = useState<IInit['displayMode']>('integrated');
   const [isSideDrawerOpen, setIsSideDrawerOpen] = useState(false);
   const [sideDrawerTab, setSideDrawerTab] = useState<'config' | 'snippet'>('config');
-  
-  const langContext = useLanguage() as any;
-
-  useEffect(() => {
-    const updateButtonText = () => {
-      // 1. 获取当前系统采用的语言
-      const contextLang = langContext?.language || langContext?.locale || '';
-      const browserLang = typeof window !== 'undefined' ? (window.navigator.language || '') : '';
-      
-      let currentLang = 'en';
-      const combined = (contextLang + '_' + browserLang).toLowerCase();
-
-      if (combined.includes('zh-tw') || combined.includes('zh-hk') || combined.includes('tw') || combined.includes('hk')) {
-        currentLang = 'tw';
-      } else if (combined.includes('zh') || combined.includes('cn')) {
-        currentLang = 'zh';
-      } else if (combined.includes('kr') || combined.includes('ko')) {
-        currentLang = 'kr';
-      }
-
-      const targetText = translations[currentLang] || 'Swap';
-
-      // 2. 多重容器深度穿透扫描（不管它是在外部还是 ShadowRoot）
-      const terminalContainers = document.querySelectorAll('#jupiter-terminal, .jupiter-terminal, [class*="terminal"]');
-      
-      const processElements = (root: Element | ShadowRoot) => {
-        // 激进策略 1：直接扫描大绿按钮内部的所有 button 标签
-        const buttons = root.querySelectorAll('button');
-        buttons.forEach((btn) => {
-          const txt = btn.textContent?.trim();
-          if (txt === 'Swap' || txt === '兑换' || txt === '兌換' || txt === '스왑') {
-            // 不管里面有没有额外的 span，直接清空并统一设置成目标翻译文本，打破任何旧有的内部节点干扰
-            btn.textContent = targetText;
-          }
-        });
-
-        // 激进策略 2：针对可能存在的内联文字节点进行深度定向清洗
-        const allElements = root.querySelectorAll('div, span, p');
-        allElements.forEach((el) => {
-          if (el.children.length === 0) { // 仅处理最底层的文字叶子节点
-            const txt = el.textContent?.trim();
-            if (txt === 'Swap' || txt === '兑换' || txt === '兌換' || txt === '스왑') {
-              el.textContent = targetText;
-            }
-          }
-        });
-      };
-
-      // 兜底扫描：先处理页面全局环境
-      processElements(document.body);
-
-      // 容器级独立扫描
-      terminalContainers.forEach((container) => {
-        processElements(container);
-        if (container.shadowRoot) {
-          processElements(container.shadowRoot);
-        }
-      });
-    };
-
-    // 立即执行
-    updateButtonText();
-
-    // 毫秒级防闪烁高频轮询计时器（专门对付异步 React 重新渲染覆盖 DOM）
-    const timer = setInterval(updateButtonText, 100);
-
-    const observer = new MutationObserver(() => {
-      updateButtonText();
-    });
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-      characterData: true
-    });
-
-    return () => {
-      clearInterval(timer);
-      observer.disconnect();
-    };
-  }, [langContext, displayMode]);
-
-  useEffect(() => {
-    const cleanJupiterAssets = () => {
-      const terminalContainers = document.querySelectorAll('#jupiter-terminal, .jupiter-terminal, [class*="terminal"]');
-      terminalContainers.forEach((container) => {
-        const svgs = container.querySelectorAll('svg');
-        svgs.forEach((svg) => {
-          if (svg.innerHTML.includes('path') || svg.closest('[class*="header"]') || svg.closest('[class*="Header"]')) {
-            svg.style.setProperty('display', 'none', 'important');
-            svg.style.setProperty('width', '0px', 'important');
-            svg.style.setProperty('height', '0px', 'important');
-            svg.style.setProperty('opacity', '0', 'important');
-          }
-        });
-
-        if (container.shadowRoot) {
-          const shadowSvgs = container.shadowRoot.querySelectorAll('svg');
-          shadowSvgs.forEach((svg) => {
-            svg.style.setProperty('display', 'none', 'important');
-            svg.style.setProperty('width', '0px', 'important');
-            svg.style.setProperty('opacity', '0', 'important');
-          });
-        }
-      });
-
-      const elements = document.querySelectorAll('span, p, div');
-      elements.forEach((el) => {
-        if (el.textContent && el.textContent.includes('Jupiter renders as')) {
-          (el as HTMLElement).style.setProperty('display', 'none', 'important');
-          el.textContent = '';
-        }
-      });
-    };
-
-    cleanJupiterAssets();
-
-    const observer = new MutationObserver(() => {
-      cleanJupiterAssets();
-    });
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
-
-    return () => observer.disconnect();
-  }, [displayMode]);
 
   useEffect(() => {
     if (window.Jupiter._instance) {
       window.Jupiter._instance = null;
     }
-
     setPluginInView(false);
   }, [displayMode]);
 
@@ -343,6 +207,37 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
         <style dangerouslySetInnerHTML={{__html: `
+          /* 核心高优先级样式：通过纯 CSS 暴力改写按钮文字 */
+          /* 无论是 Swap、还是任何状态下的原生英文字符，直接隐藏原字符，强制追加“兑换” */
+          #jupiter-terminal button[type="submit"],
+          .jupiter-terminal button[type="submit"],
+          #jupiter-terminal button:has(div),
+          .jupiter-terminal button:not([aria-label]) {
+            font-size: 0 !important; /* 隐藏原本的英文 Swap 字号 */
+          }
+
+          #jupiter-terminal button[type="submit"]::after,
+          .jupiter-terminal button[type="submit"]::after,
+          #jupiter-terminal button:has(div)::after,
+          .jupiter-terminal button:not([aria-label])::after {
+            content: "兑换" !important; /* 强行写入中文 */
+            font-size: 16px !important; /* 恢复正常显示的字号 */
+            display: block !important;
+            width: 100% !important;
+            text-align: center !important;
+          }
+
+          /* 过滤掉钱包连接等带有特定小图标的按钮，防止误伤 */
+          #jupiter-terminal button:has(svg)::after,
+          .jupiter-terminal button:has(svg)::after {
+            content: none !important;
+          }
+          #jupiter-terminal button:has(svg),
+          .jupiter-terminal button:has(svg) {
+            font-size: inherit !important;
+          }
+
+          /* 原有隐藏和清洁资产样式 */
           #jupiter-terminal svg:first-of-type,
           .jupiter-terminal svg:first-of-type,
           [class*="terminal"] div[class*="header"] svg,
