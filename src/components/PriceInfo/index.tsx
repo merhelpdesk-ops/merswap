@@ -29,7 +29,13 @@ const Index = ({
   loading: boolean;
   containerClassName?: string;
 }) => {
-  const [lang, setLang] = useState<Language>('en');
+  // 核心改动：初始化时强制读取 localStorage
+  const [lang, setLang] = useState<Language>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('lang') as Language) || 'en';
+    }
+    return 'en';
+  });
 
   useEffect(() => {
     const handleLangChange = (e: any) => {
