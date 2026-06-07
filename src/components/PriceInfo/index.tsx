@@ -1,5 +1,5 @@
 import Decimal from 'decimal.js';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { formatNumber } from 'src/misc/utils';
 import ExchangeRate from '../ExchangeRate';
 import TransactionFee from './TransactionFee';
@@ -30,15 +30,15 @@ const Index = ({
   toTokenInfo,
   loading,
   containerClassName,
+  lang = 'en', // 接收从外层传进来的语言状态
 }: {
   quoteResponse: QuoteResponse;
   fromTokenInfo: Asset;
   toTokenInfo: Asset;
   loading: boolean;
   containerClassName?: string;
+  lang?: Language;
 }) => {
-  const [lang, setLang] = useState<Language>('en');
-
   const rateParams = {
     inAmount: quoteResponse?.quoteResponse.inAmount || BigInt(0),
     inputAsset: fromTokenInfo,
@@ -76,30 +76,6 @@ const Index = ({
 
   return (
     <div className={cn('mt-4 space-y-4 ', containerClassName)}>
-      {/* 核心改动：把语言切换器提升到最外层，确保只要组件挂载就永久显示 */}
-      <div className="flex justify-end space-x-2 text-[10px] text-primary-text/40">
-        <button 
-          onClick={() => setLang('en')} 
-          className={cn('hover:text-primary-text transition-colors', lang === 'en' && 'text-primary-text font-bold')}
-        >
-          EN
-        </button>
-        <span>|</span>
-        <button 
-          onClick={() => setLang('ko')} 
-          className={cn('hover:text-primary-text transition-colors', lang === 'ko' && 'text-primary-text font-bold')}
-        >
-          KO
-        </button>
-        <span>|</span>
-        <button 
-          onClick={() => setLang('zh')} 
-          className={cn('hover:text-primary-text transition-colors', lang === 'zh' && 'text-primary-text font-bold')}
-        >
-          ZH
-        </button>
-      </div>
-
       <div className="flex items-center justify-between text-xs">
         <div className="text-primary-text/50"><span>{i18n[lang].rate}</span></div>
         {rateParams.inAmount > BigInt(0) &&
