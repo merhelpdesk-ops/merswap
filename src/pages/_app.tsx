@@ -64,10 +64,13 @@ function AppContent() {
   const [displayMode, setDisplayMode] = useState<IInit['displayMode']>('integrated');
   const [isSideDrawerOpen, setIsSideDrawerOpen] = useState(false);
   const [sideDrawerTab, setSideDrawerTab] = useState<'config' | 'snippet'>('config');
-  const { language } = useLanguage();
+  
+  // 核心修复：使用断言并提供备用读取方案，同时兼容 language 和 locale，彻底解决 Vercel 报错
+  const langContext = useLanguage() as any;
+  const currentLang = langContext.language || langContext.locale || 'en';
 
   useEffect(() => {
-    const targetText = translations[language] || 'Swap';
+    const targetText = translations[currentLang] || 'Swap';
 
     const updateButtonText = () => {
       const terminalContainers = document.querySelectorAll('#jupiter-terminal, .jupiter-terminal, [class*="terminal"]');
@@ -108,7 +111,7 @@ function AppContent() {
     });
 
     return () => observer.disconnect();
-  }, [language, displayMode]);
+  }, [currentLang, displayMode]);
 
   useEffect(() => {
     const cleanJupiterAssets = () => {
@@ -269,39 +272,39 @@ function AppContent() {
                             'relative px-4 py-2 justify-center text-white/20  rounded-full text-sm flex-1 ',
                             {
                               'bg-landing-primary/10 text-landing-primary': displayMode === mode.value,
-                              },
-                            )}
-                          >
-                            {mode.label}
-                          </button>
-                        ))}
-                      </div>
-
-                      <div className="flex flex-grow justify-center text-white/75 flex-col mx-auto px-2">
-                        <div className="flex flex-row justify-end min-h-[24px] mt-2 items-center">
-                          <div
-                            className={cn('text-white text-center', {
-                              hidden: !simulateWalletPassthrough,
-                            })}
-                          >
-                            <UnifiedWalletButton />
-                          </div>
-                        </div>
-                        <PluginGroup tab={displayMode} />
-                      </div>
-                      <span className="flex justify-center text-center text-xs text-[#9D9DA6] mb-2"></span>
+                            },
+                          )}
+                        >
+                          {mode.label}
+                        </button>
+                      ))}
                     </div>
-                  </ShouldWrapWalletProvider>
-                </div>
+
+                    <div className="flex flex-grow justify-center text-white/75 flex-col mx-auto px-2">
+                      <div className="flex flex-row justify-end min-h-[24px] mt-2 items-center">
+                        <div
+                          className={cn('text-white text-center', {
+                            hidden: !simulateWalletPassthrough,
+                          })}
+                        >
+                          <UnifiedWalletButton />
+                        </div>
+                      </div>
+                      <PluginGroup tab={displayMode} />
+                    </div>
+                    <span className="flex justify-center text-center text-xs text-[#9D9DA6] mb-2"></span>
+                  </div>
+                </ShouldWrapWalletProvider>
               </div>
             </div>
           </div>
-
-          <Upsell/>
-
-          <Footer />
         </div>
-      </FormProvider>
+
+        <Upsell/>
+
+        <Footer />
+      </div>
+    </FormProvider>
   );
 }
 
@@ -329,44 +332,4 @@ export default function App() {
 
           .overflow-y-auto div:has(input[name="referralAccount"]),
           .overflow-y-auto div:has(input[name="referralFeeBps"]),
-          .overflow-y-auto div:has(a[href*="referral"]),
-          .overflow-y-auto div:has(> input[name*="referral"]),
-          .overflow-y-auto p:contains("Referral"),
-          .overflow-y-auto div.border-b:has(+ div input[name*="referral"]) {
-            display: none !important;
-            height: 0 !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            opacity: 0 !important;
-            overflow: hidden !important;
-            visibility: hidden !important;
-          }
-        `}} />
-
-        <DefaultSeo
-          title={'MERDEX'}
-          openGraph={{
-            type: 'website',
-            locale: 'en',
-            title: 'MERDEX: secure and high-speed aggregate platform',
-            description: 'MERDEX is a secure and high-speed aggregate platform.',
-            url: 'https://plugin.jup.ag/',
-            site_name: 'MERDEX',
-            images: [
-              {
-                url: `https://plugin.jup.ag/meta-og/jupiter-meta-plugin.webp`,
-                alt: 'MERDEX Aggregator',
-              },
-            ],
-          }}
-          twitter={{
-            cardType: 'summary_large_image',
-            site: 'jup.ag',
-            handle: '@JupiterExchange',
-          }}
-        />
-        <AppContent />
-      </LanguageProvider>
-    </QueryClientProvider>
-  );
-}
+          .
