@@ -16,19 +16,19 @@ const UpsellContent = () => {
     cn: {
       swap: { title: '交易手续费', desc: '轻松赚取交易手续费。' },
       support: { title: 'MERHelpDesk 24/7 客户支持', desc: '如果您遇到任何问题，请点击页面底部的 Twitter (X) 图标发送您的问题。我们的支持团队 24/7 全天候在线，并将竭尽全力为您解决问题。' },
-      ultra: { title: '极致交易', desc: '无缝集成 jup.ag 交易体验，尽享所有 Ultra 功能。' },
+      ultra: { title: '极致交易', desc: '聚合多DEX服务和捕获代币信息MER DEX为您提供安全高效的交易体验！' },
       oneStop: { title: '一站式服务！MERDEX 为您提供全球聚合器！', desc: 'MERDEX 已为您聚合全网报价！我们将竭尽所能为您带来更多市场机会！' }
     },
     tw: {
       swap: { title: '交易手續費', desc: '輕鬆賺取交易手續費。' },
       support: { title: 'MERHelpDesk 24/7 客戶支持', desc: '如果您遇到任何問題，請點擊頁面底部的 Twitter (X) 圖標發送您的問題。我們的支持團隊 24/7 全天候在線，並將竭盡全力為您解決問題。' },
-      ultra: { title: '極致交易', desc: '無縫集成 jup.ag 交易體驗，盡享所有 Ultra 功能。' },
+      ultra: { title: '極致交易', desc: '聚合多DEX服务和捕獲代幣資訊MER DEX 為您提供安全高效的交易體驗！' },
       oneStop: { title: '一站式服務！MERDEX 為您提供全球聚合器！', desc: 'MERDEX 已為您聚合全網報價！我們將竭盡所能為您帶來更多市場機會！' }
     },
     ko: {
       swap: { title: '스왑 수수료', desc: '스왑 수수료를 쉽게 벌어보세요.' },
       support: { title: 'MERHelpDesk 24/7 고객 서비스 지원', desc: '문제가 발생하면 페이지 하단의 Twitter (X) 아이콘을 클릭하여 문의해 주세요. 고객 지원 팀이 24/7 대기 중이며 문제를 해결하기 위해 최선을 다하겠습니다.' },
-      ultra: { title: '울트라 스왑', desc: '모든 울트라 기능을 갖춘 jup.ag 스왑 경험을 완벽하게 통합하세요.' },
+      ultra: { title: '울트라 스왑', desc: '. 다중 DEX 서비스를 통합하고 토큰 정보를 포획하여 MER DEX가 안전하고 효율적인 거래 경험을 제공합니다!' },
       oneStop: { title: '원스톱 서비스! MERDEX가 글로벌 애그리게이터를 제공합니다!', desc: 'MERDEX가 전체 네트워크 견적을 통합했습니다! 더 많은 시장 기회를 제공하기 위해 최선을 다하겠습니다!' }
     }
   };
