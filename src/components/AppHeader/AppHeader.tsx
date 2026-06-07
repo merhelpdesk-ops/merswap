@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useLanguage } from '../LanguageContext';
 
 interface AppHeaderProps {
   isSideDrawerOpen?: boolean;
@@ -7,27 +8,16 @@ interface AppHeaderProps {
 
 const AppHeader: React.FC<AppHeaderProps> = () => {
   const [openMobileMenu, setOpenMobileMenu] = useState(false);
-  
-  // 初始化时从 localStorage 读取语言
-  const [lang, setLang] = useState<'en' | 'cn' | 'tw' | 'ko'>(() => {
-    if (typeof window !== 'undefined') {
-      return (localStorage.getItem('lang') as any) || 'en';
-    }
-    return 'en';
-  });
-
-  const switchLanguage = (newLang: 'en' | 'cn' | 'tw' | 'ko') => {
-    setLang(newLang);
-    localStorage.setItem('lang', newLang); // 保存到本地存储
-    window.dispatchEvent(new CustomEvent('langChange', { detail: newLang }));
-  };
+  const { lang, setLang } = useLanguage();
 
   useEffect(() => {
     const body = document.querySelector('body');
-    if (openMobileMenu) {
-      body!.style.overflow = 'hidden';
-    } else {
-      body!.style.overflow = '';
+    if (body) {
+      if (openMobileMenu) {
+        body.style.overflow = 'hidden';
+      } else {
+        body.style.overflow = '';
+      }
     }
   }, [openMobileMenu]);
 
@@ -42,25 +32,25 @@ const AppHeader: React.FC<AppHeaderProps> = () => {
 
         <div className="flex items-center space-x-3 text-[10px] text-white/50">
           <button 
-            onClick={() => switchLanguage('en')} 
+            onClick={() => setLang('en')} 
             className={lang === 'en' ? 'text-white font-bold' : ''}
           >
             English
           </button>
           <button 
-            onClick={() => switchLanguage('cn')} 
+            onClick={() => setLang('cn')} 
             className={lang === 'cn' ? 'text-white font-bold' : ''}
           >
             简体中文
           </button>
           <button 
-            onClick={() => switchLanguage('tw')} 
+            onClick={() => setLang('tw')} 
             className={lang === 'tw' ? 'text-white font-bold' : ''}
           >
             繁體中文
           </button>
           <button 
-            onClick={() => switchLanguage('ko')} 
+            onClick={() => setLang('ko')} 
             className={lang === 'ko' ? 'text-white font-bold' : ''}
           >
             한국어
