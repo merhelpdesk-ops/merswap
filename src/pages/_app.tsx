@@ -332,4 +332,44 @@ export default function App() {
 
           .overflow-y-auto div:has(input[name="referralAccount"]),
           .overflow-y-auto div:has(input[name="referralFeeBps"]),
-          .
+          .overflow-y-auto div:has(a[href*="referral"]),
+          .overflow-y-auto div:has(> input[name*="referral"]),
+          .overflow-y-auto p:contains("Referral"),
+          .overflow-y-auto div.border-b:has(+ div input[name*="referral"]) {
+            display: none !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            opacity: 0 !important;
+            overflow: hidden !important;
+            visibility: hidden !important;
+          }
+        `}} />
+
+        <DefaultSeo
+          title={'MERDEX'}
+          openGraph={{
+            type: 'website',
+            locale: 'en',
+            title: 'MERDEX: secure and high-speed aggregate platform',
+            description: 'MERDEX is a secure and high-speed aggregate platform.',
+            url: 'https://plugin.jup.ag/',
+            site_name: 'MERDEX',
+            images: [
+              {
+                url: `https://plugin.jup.ag/meta-og/jupiter-meta-plugin.webp`,
+                alt: 'MERDEX Aggregator',
+              },
+            ],
+          }}
+          twitter={{
+            cardType: 'summary_large_image',
+            site: 'jup.ag',
+            handle: '@JupiterExchange',
+          }}
+        />
+        <AppContent />
+      </LanguageProvider>
+    </QueryClientProvider>
+  );
+}
