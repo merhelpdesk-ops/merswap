@@ -1,6 +1,6 @@
 import React from 'react';
-// 已修复引用路径：指向你在 components 文件夹下创建的那个文件
-import { useLanguage } from 'src/components/LanguageContext'; 
+// 使用相对路径，彻底绕过构建系统的别名解析问题
+import { useLanguage } from './LanguageContext'; 
 
 export const Upsell = () => {
   const { lang } = useLanguage(); 
