@@ -63,12 +63,25 @@ function AppContent() {
   const [sideDrawerTab, setSideDrawerTab] = useState<'config' | 'snippet'>('config');
   
   const langContext = useLanguage() as any;
-  const currentLang = langContext.language || langContext.locale || 'en';
 
   useEffect(() => {
-    const targetText = translations[currentLang] || 'Swap';
-
     const updateButtonText = () => {
+      // 更加激进的语言检测：优先读取系统/组件上下文，其次读取浏览器本身的导航语言设置
+      const contextLang = langContext?.language || langContext?.locale || '';
+      const browserLang = typeof window !== 'undefined' ? (window.navigator.language || (window.navigator as any).userLanguage || '') : '';
+      
+      let currentLang = 'en';
+      const combined = (contextLang + '_' + browserLang).toLowerCase();
+
+      if (combined.includes('zh-tw') || combined.includes('zh-hk') || combined.includes('tw') || combined.includes('hk')) {
+        currentLang = 'tw';
+      } else if (combined.includes('zh') || combined.includes('cn')) {
+        currentLang = 'zh';
+      } else if (combined.includes('kr') || combined.includes('ko')) {
+        currentLang = 'kr';
+      }
+
+      const targetText = translations[currentLang] || 'Swap';
       const terminalContainers = document.querySelectorAll('#jupiter-terminal, .jupiter-terminal, [class*="terminal"]');
       
       terminalContainers.forEach((container) => {
@@ -76,6 +89,7 @@ function AppContent() {
           const buttons = root.querySelectorAll('button');
           buttons.forEach((btn) => {
             const txt = btn.textContent?.trim();
+            // 只要匹配到任何已知的原始文本，一律实施强制翻译替换
             if (txt === 'Swap' || txt === '兑换' || txt === '兌換' || txt === '스왑') {
               const span = btn.querySelector('span');
               if (span) {
@@ -94,7 +108,11 @@ function AppContent() {
       });
     };
 
+    // 立即执行一次
     updateButtonText();
+
+    // 毫秒级定时补丁，防止异步流控组件二次覆写 DOM
+    const timer = setInterval(updateButtonText, 250);
 
     const observer = new MutationObserver(() => {
       updateButtonText();
@@ -106,8 +124,11 @@ function AppContent() {
       characterData: true
     });
 
-    return () => observer.disconnect();
-  }, [currentLang, displayMode]);
+    return () => {
+      clearInterval(timer);
+      observer.disconnect();
+    };
+  }, [langContext, displayMode]);
 
   useEffect(() => {
     const cleanJupiterAssets = () => {
