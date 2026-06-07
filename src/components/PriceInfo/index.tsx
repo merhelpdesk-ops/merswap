@@ -30,7 +30,7 @@ const Index = ({
   toTokenInfo,
   loading,
   containerClassName,
-  lang = 'en', // 接收从外层传进来的语言状态
+  lang = 'en',
 }: {
   quoteResponse: QuoteResponse;
   fromTokenInfo: Asset;
