@@ -135,16 +135,54 @@ function AppContent() {
       terminalContainers.forEach((container) => {
         const svgs = container.querySelectorAll('svg');
         svgs.forEach((svg) => {
-          if (svg.innerHTML.includes('path') || svg.closest('[class*="header"]') || svg.closest('[class*="Header"]')) {
-            svg.style.setProperty('display', 'none', 'important');
-            svg.style.setProperty('width', '0px', 'important');
-            svg.style.setProperty('height', '0px', 'important');
-            svg.style.setProperty('opacity', '0', 'important');
-          }
+          svg.style.setProperty('display', 'none', 'important');
         });
 
         if (container.shadowRoot) {
           const shadowSvgs = container.shadowRoot.querySelectorAll('svg');
           shadowSvgs.forEach((svg) => {
             svg.style.setProperty('display', 'none', 'important');
-            svg.style.setProperty('width', '0px', '
+          });
+        }
+      });
+
+      const elements = document.querySelectorAll('span, p, div');
+      elements.forEach((el) => {
+        if (el.textContent && el.textContent.includes('Jupiter renders as')) {
+          (el as HTMLElement).style.setProperty('display', 'none', 'important');
+          el.textContent = '';
+        }
+      });
+    };
+
+    cleanJupiterAssets();
+
+    const observer = new MutationObserver(() => {
+      cleanJupiterAssets();
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    return () => observer.disconnect();
+  }, [displayMode]);
+
+  useEffect(() => {
+    if (window.Jupiter._instance) {
+      window.Jupiter._instance = null;
+    }
+    setPluginInView(false);
+  }, [displayMode]);
+
+  const methods = useForm<IFormConfigurator>({
+    defaultValues: INITIAL_FORM_CONFIG,
+  });
+
+  const { control } = methods;
+  const simulateWalletPassthrough = useWatch({ control, name: 'simulateWalletPassthrough' });
+
+  const wallets = useMemo(() => [new UnsafeBurnerWalletAdapter(), new SolflareWalletAdapter()], []);
+
+  const ShouldWrapWalletProvider = useMemo(()
