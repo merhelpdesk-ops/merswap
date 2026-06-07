@@ -2,9 +2,6 @@ import { UnifiedWalletButton, UnifiedWalletProvider } from '@jup-ag/wallet-adapt
 import { DefaultSeo } from 'next-seo';
 import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 
-import 'tailwindcss/tailwind.css';
-import '../styles/globals.css';
-
 import AppHeader from 'src/components/AppHeader/AppHeader';
 import Footer from 'src/components/Footer/Footer';
 
@@ -53,7 +50,6 @@ const PLUGIN_MODE: { label: string; value: IInit['displayMode'] }[] = [
   },
 ];
 
-// 多语言 Swap 按钮对照表
 const translations: Record<string, string> = {
   en: 'Swap',
   zh: '兑换',
@@ -66,11 +62,9 @@ function AppContent() {
   const [isSideDrawerOpen, setIsSideDrawerOpen] = useState(false);
   const [sideDrawerTab, setSideDrawerTab] = useState<'config' | 'snippet'>('config');
   
-  // 兼容读取 language 或 locale 属性，防止 TypeScript 编译报错卡死
   const langContext = useLanguage() as any;
   const currentLang = langContext.language || langContext.locale || 'en';
 
-  // 深度劫持并替换外部 Jupiter 插件中的 Swap 按钮文本
   useEffect(() => {
     const targetText = translations[currentLang] || 'Swap';
 
