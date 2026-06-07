@@ -1,42 +1,44 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-// 1. 定义支持的语言
+// 1. 定义支持的语言类型
 export type Lang = 'en' | 'cn' | 'tw' | 'ko';
 
 interface ILanguageContext {
   lang: Lang;
   setLang: (l: Lang) => void;
+  isReady: boolean; // 用于确保客户端初始化完成
 }
 
 const LanguageContext = createContext<ILanguageContext | undefined>(undefined);
 
-// 2. 创建 Provider，增加持久化逻辑
+// 2. Provider 组件
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  // 初始化状态时，尝试从 localStorage 获取，默认为 'en'
   const [lang, setLangState] = useState<Lang>('en');
+  const [isReady, setIsReady] = useState(false);
 
-  // 组件加载时读取一次本地存储
   useEffect(() => {
+    // 从 localStorage 读取语言设置
     const savedLang = localStorage.getItem('lang') as Lang;
-    if (savedLang) {
+    if (savedLang && ['en', 'cn', 'tw', 'ko'].includes(savedLang)) {
       setLangState(savedLang);
     }
+    setIsReady(true);
   }, []);
 
-  // 修改 setLang，使其同时更新 localStorage
+  // 修改语言并触发即时渲染
   const setLang = (l: Lang) => {
-    setLangState(l);
+    setLangState(l); // 这一行是触发 UI 实时更新的关键
     localStorage.setItem('lang', l);
   };
 
   return (
-    <LanguageContext.Provider value={{ lang, setLang }}>
+    <LanguageContext.Provider value={{ lang, setLang, isReady }}>
       {children}
     </LanguageContext.Provider>
   );
 };
 
-// 3. 导出钩子
+// 3. 自定义 Hook
 export const useLanguage = (): ILanguageContext => {
   const context = useContext(LanguageContext);
   if (!context) {
