@@ -76,6 +76,7 @@ const Index = ({
 
   return (
     <div className={cn('mt-4 space-y-4 ', containerClassName)}>
+      {/* 核心改动：把语言切换器提升到最外层，确保只要组件挂载就永久显示 */}
       <div className="flex justify-end space-x-2 text-[10px] text-primary-text/40">
         <button 
           onClick={() => setLang('en')} 
