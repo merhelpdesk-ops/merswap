@@ -7,11 +7,11 @@ interface AppHeaderProps {
 
 const AppHeader: React.FC<AppHeaderProps> = () => {
   const [openMobileMenu, setOpenMobileMenu] = useState(false);
-  const [lang, setLang] = useState<'en' | 'ko' | 'zh'>('en');
+  const [lang, setLang] = useState<'en' | 'cn' | 'tw' | 'ko'>('en');
 
   const handleToggleMenu = () => setOpenMobileMenu(!openMobileMenu);
 
-  const switchLanguage = (newLang: 'en' | 'ko' | 'zh') => {
+  const switchLanguage = (newLang: 'en' | 'cn' | 'tw' | 'ko') => {
     setLang(newLang);
     window.dispatchEvent(new CustomEvent('langChange', { detail: newLang }));
   };
@@ -34,26 +34,30 @@ const AppHeader: React.FC<AppHeaderProps> = () => {
           </h1>
         </div>
 
-        <div className="flex items-center space-x-2 text-[10px] text-white/50">
+        <div className="flex items-center space-x-3 text-[10px] text-white/50">
           <button 
             onClick={() => switchLanguage('en')} 
             className={lang === 'en' ? 'text-white font-bold' : ''}
           >
-            EN
+            English
           </button>
-          <span>|</span>
+          <button 
+            onClick={() => switchLanguage('cn')} 
+            className={lang === 'cn' ? 'text-white font-bold' : ''}
+          >
+            简体中文
+          </button>
+          <button 
+            onClick={() => switchLanguage('tw')} 
+            className={lang === 'tw' ? 'text-white font-bold' : ''}
+          >
+            繁體中文
+          </button>
           <button 
             onClick={() => switchLanguage('ko')} 
             className={lang === 'ko' ? 'text-white font-bold' : ''}
           >
-            KO
-          </button>
-          <span>|</span>
-          <button 
-            onClick={() => switchLanguage('zh')} 
-            className={lang === 'zh' ? 'text-white font-bold' : ''}
-          >
-            ZH
+            한국어
           </button>
         </div>
       </div>
