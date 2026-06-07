@@ -22,6 +22,7 @@ import SideDrawer from 'src/components/SideDrawer/SideDrawer';
 import CloseIcon from 'src/icons/CloseIcon';
 import { Upsell } from 'src/components/Upsell';
 import { PluginGroup } from 'src/content/PluginGroup';
+import { LanguageProvider } from 'src/components/LanguageContext';
 
 const isDevNodeENV = process.env.NODE_ENV === 'development';
 const isDeveloping = isDevNodeENV && typeof window !== 'undefined';
@@ -146,166 +147,168 @@ export default function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <style dangerouslySetInnerHTML={{__html: `
-        #jupiter-terminal svg:first-of-type,
-        .jupiter-terminal svg:first-of-type,
-        [class*="terminal"] div[class*="header"] svg,
-        [class*="terminal"] div[class*="Header"] svg,
-        div[class*="header"] > div > svg:first-child,
-        span[class*="text-white/20"] + div svg {
-          display: none !important;
-          width: 0 !important;
-          height: 0 !important;
-          opacity: 0 !important;
-          visibility: hidden !important;
-        }
-        .bg-landing-bg > div span.text-xs {
-          display: none !important;
-          opacity: 0 !important;
-        }
+      <LanguageProvider>
+        <style dangerouslySetInnerHTML={{__html: `
+          #jupiter-terminal svg:first-of-type,
+          .jupiter-terminal svg:first-of-type,
+          [class*="terminal"] div[class*="header"] svg,
+          [class*="terminal"] div[class*="Header"] svg,
+          div[class*="header"] > div > svg:first-child,
+          span[class*="text-white/20"] + div svg {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+          }
+          .bg-landing-bg > div span.text-xs {
+            display: none !important;
+            opacity: 0 !important;
+          }
 
-        .overflow-y-auto div:has(input[name="referralAccount"]),
-        .overflow-y-auto div:has(input[name="referralFeeBps"]),
-        .overflow-y-auto div:has(a[href*="referral"]),
-        .overflow-y-auto div:has(> input[name*="referral"]),
-        .overflow-y-auto p:contains("Referral"),
-        .overflow-y-auto div.border-b:has(+ div input[name*="referral"]) {
-          display: none !important;
-          height: 0 !important;
-          margin: 0 !important;
-          padding: 0 !important;
-          opacity: 0 !important;
-          overflow: hidden !important;
-          visibility: hidden !important;
-        }
-      `}} />
+          .overflow-y-auto div:has(input[name="referralAccount"]),
+          .overflow-y-auto div:has(input[name="referralFeeBps"]),
+          .overflow-y-auto div:has(a[href*="referral"]),
+          .overflow-y-auto div:has(> input[name*="referral"]),
+          .overflow-y-auto p:contains("Referral"),
+          .overflow-y-auto div.border-b:has(+ div input[name*="referral"]) {
+            display: none !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            opacity: 0 !important;
+            overflow: hidden !important;
+            visibility: hidden !important;
+          }
+        `}} />
 
-      <DefaultSeo
-        title={'MERDEX'}
-        openGraph={{
-          type: 'website',
-          locale: 'en',
-          title: 'MERDEX: secure and high-speed aggregate platform',
-          description: 'MERDEX is a secure and high-speed aggregate platform.',
-          url: 'https://plugin.jup.ag/',
-          site_name: 'MERDEX',
-          images: [
-            {
-              url: `https://plugin.jup.ag/meta-og/jupiter-meta-plugin.webp`,
-              alt: 'MERDEX Aggregator',
-            },
-          ],
-        }}
-        twitter={{
-          cardType: 'summary_large_image',
-          site: 'jup.ag',
-          handle: '@JupiterExchange',
-        }}
-      />
-      <FormProvider {...methods}>
-        <div className="bg-landing-bg h-screen w-screen max-w-screen overflow-x-hidden flex flex-col justify-between gap-y-10">
-          <SideDrawer isOpen={isSideDrawerOpen} setIsOpen={setIsSideDrawerOpen}>
-            <div className="flex flex-col h-full">
-              <div className="flex justify-between items-center py-4 px-4 text-white gap-2 border-b border-white/10">
-                <h1 className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-lime-400 bg-clip-text text-transparent tracking-wide">
-                  MERDEX
-                </h1>
-                <button
-                  className="p-2 text-white/50 hover:text-gray-300 transition-colors"
-                  onClick={() => setIsSideDrawerOpen(false)}
-                  aria-label="Close drawer"
-                >
-                  <CloseIcon width={20} height={20} />
-                </button>
-              </div>
+        <DefaultSeo
+          title={'MERDEX'}
+          openGraph={{
+            type: 'website',
+            locale: 'en',
+            title: 'MERDEX: secure and high-speed aggregate platform',
+            description: 'MERDEX is a secure and high-speed aggregate platform.',
+            url: 'https://plugin.jup.ag/',
+            site_name: 'MERDEX',
+            images: [
+              {
+                url: `https://plugin.jup.ag/meta-og/jupiter-meta-plugin.webp`,
+                alt: 'MERDEX Aggregator',
+              },
+            ],
+          }}
+          twitter={{
+            cardType: 'summary_large_image',
+            site: 'jup.ag',
+            handle: '@JupiterExchange',
+          }}
+        />
+        <FormProvider {...methods}>
+          <div className="bg-landing-bg h-screen w-screen max-w-screen overflow-x-hidden flex flex-col justify-between gap-y-10">
+            <SideDrawer isOpen={isSideDrawerOpen} setIsOpen={setIsSideDrawerOpen}>
+              <div className="flex flex-col h-full">
+                <div className="flex justify-between items-center py-4 px-4 text-white gap-2 border-b border-white/10">
+                  <h1 className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-lime-400 bg-clip-text text-transparent tracking-wide">
+                    MERDEX
+                  </h1>
+                  <button
+                    className="p-2 text-white/50 hover:text-gray-300 transition-colors"
+                    onClick={() => setIsSideDrawerOpen(false)}
+                    aria-label="Close drawer"
+                  >
+                    <CloseIcon width={20} height={20} />
+                  </button>
+                </div>
 
-              <div className="flex justify-between items-center my-4 mx-4 text-white gap-2 border border-white/10 rounded-full">
-                <button
-                  className={cn('flex-1 p-2 rounded-full text-landing-primary', {
-                    'bg-landing-primary/20 ': sideDrawerTab === 'config',
-                  })}
-                  onClick={() => setSideDrawerTab('config')}
-                >
-                  Config
-                </button>
-                <button
-                  className={cn('flex-1 p-2 rounded-full text-landing-primary', {
-                    'bg-landing-primary/20 ': sideDrawerTab === 'snippet',
-                  })}
-                  onClick={() => setSideDrawerTab('snippet')}
-                >
-                  Snippet
-                </button>
-              </div>
-              <div className="flex-1 overflow-y-auto px-4 py-2">
-                {sideDrawerTab === 'config' ? <FormConfigurator /> : <CodeBlocks displayMode={'integrated'} />}
-              </div>
-            </div>
-          </SideDrawer>
-          <AppHeader/>
-          <div>
-            <div className="px-2">
-              <div className="flex flex-col items-center h-full w-full md:mt-5">
-                <div className="flex flex-col justify-center items-center text-center">
-                  <div className="flex space-x-2">
-                    <V2SexyChameleonText animate={false} className="text-4xl md:text-[60px] md:h-[66px] font-semibold flex flex-row items-center ">
-                      MERDEX
-                    </V2SexyChameleonText>
-                  </div>
-                  <p className="text-[#9D9DA6] text-md mt-4 heading-[24px]">
-                    MERDEX is a secure and high-speed aggregate platform.
-                  </p>
+                <div className="flex justify-between items-center my-4 mx-4 text-white gap-2 border border-white/10 rounded-full">
+                  <button
+                    className={cn('flex-1 p-2 rounded-full text-landing-primary', {
+                      'bg-landing-primary/20 ': sideDrawerTab === 'config',
+                    })}
+                    onClick={() => setSideDrawerTab('config')}
+                  >
+                    Config
+                  </button>
+                  <button
+                    className={cn('flex-1 p-2 rounded-full text-landing-primary', {
+                      'bg-landing-primary/20 ': sideDrawerTab === 'snippet',
+                    })}
+                    onClick={() => setSideDrawerTab('snippet')}
+                  >
+                    Snippet
+                  </button>
+                </div>
+                <div className="flex-1 overflow-y-auto px-4 py-2">
+                  {sideDrawerTab === 'config' ? <FormConfigurator /> : <CodeBlocks displayMode={'integrated'} />}
                 </div>
               </div>
-
-              <div className="flex justify-center">
-                <div className="max-w-[420px] mt-8 rounded-3xl flex flex-col md:flex-row w-full relative border border-white/10">
-                  <ShouldWrapWalletProvider>
-                    <div className=" h-full w-full rounded-xl flex flex-col">
-                      
-                      <div className="hidden flex-row justify-between py-3 px-2 border-b border-white/10">
-                        {PLUGIN_MODE.map((mode) => (
-                          <button
-                            key={mode.value}
-                            onClick={() => setDisplayMode(mode.value)}
-                            type="button"
-                            className={cn(
-                              'relative px-4 py-2 justify-center text-white/20  rounded-full text-sm flex-1 ',
-                              {
-                                'bg-landing-primary/10 text-landing-primary': displayMode === mode.value,
-                              },
-                            )}
-                          >
-                            {mode.label}
-                          </button>
-                        ))}
-                      </div>
-
-                      <div className="flex flex-grow justify-center text-white/75 flex-col mx-auto px-2">
-                        <div className="flex flex-row justify-end min-h-[24px] mt-2 items-center">
-                          <div
-                            className={cn('text-white text-center', {
-                              hidden: !simulateWalletPassthrough,
-                            })}
-                          >
-                            <UnifiedWalletButton />
-                          </div>
-                        </div>
-                        <PluginGroup tab={displayMode} />
-                      </div>
-                      <span className="flex justify-center text-center text-xs text-[#9D9DA6] mb-2"></span>
+            </SideDrawer>
+            <AppHeader/>
+            <div>
+              <div className="px-2">
+                <div className="flex flex-col items-center h-full w-full md:mt-5">
+                  <div className="flex flex-col justify-center items-center text-center">
+                    <div className="flex space-x-2">
+                      <V2SexyChameleonText animate={false} className="text-4xl md:text-[60px] md:h-[66px] font-semibold flex flex-row items-center ">
+                        MERDEX
+                      </V2SexyChameleonText>
                     </div>
-                  </ShouldWrapWalletProvider>
+                    <p className="text-[#9D9DA6] text-md mt-4 heading-[24px]">
+                      MERDEX is a secure and high-speed aggregate platform.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex justify-center">
+                  <div className="max-w-[420px] mt-8 rounded-3xl flex flex-col md:flex-row w-full relative border border-white/10">
+                    <ShouldWrapWalletProvider>
+                      <div className=" h-full w-full rounded-xl flex flex-col">
+                        
+                        <div className="hidden flex-row justify-between py-3 px-2 border-b border-white/10">
+                          {PLUGIN_MODE.map((mode) => (
+                            <button
+                              key={mode.value}
+                              onClick={() => setDisplayMode(mode.value)}
+                              type="button"
+                              className={cn(
+                                'relative px-4 py-2 justify-center text-white/20  rounded-full text-sm flex-1 ',
+                                {
+                                  'bg-landing-primary/10 text-landing-primary': displayMode === mode.value,
+                                },
+                              )}
+                            >
+                              {mode.label}
+                            </button>
+                          ))}
+                        </div>
+
+                        <div className="flex flex-grow justify-center text-white/75 flex-col mx-auto px-2">
+                          <div className="flex flex-row justify-end min-h-[24px] mt-2 items-center">
+                            <div
+                              className={cn('text-white text-center', {
+                                hidden: !simulateWalletPassthrough,
+                              })}
+                            >
+                              <UnifiedWalletButton />
+                            </div>
+                          </div>
+                          <PluginGroup tab={displayMode} />
+                        </div>
+                        <span className="flex justify-center text-center text-xs text-[#9D9DA6] mb-2"></span>
+                      </div>
+                    </ShouldWrapWalletProvider>
+                  </div>
                 </div>
               </div>
             </div>
+
+            <Upsell/>
+
+            <Footer />
           </div>
-
-          <Upsell/>
-
-          <Footer />
-        </div>
-      </FormProvider>
+        </FormProvider>
+      </LanguageProvider>
     </QueryClientProvider>
   );
 }
