@@ -1,20 +1,34 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-// 定义支持的语言
+// 1. 定义支持的语言
 export type Lang = 'en' | 'cn' | 'tw' | 'ko';
 
-// 定义 Context 的数据结构
 interface ILanguageContext {
   lang: Lang;
   setLang: (l: Lang) => void;
 }
 
-// 创建上下文，明确泛型
 const LanguageContext = createContext<ILanguageContext | undefined>(undefined);
 
-// 创建 Provider
+// 2. 创建 Provider，增加持久化逻辑
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const [lang, setLang] = useState<Lang>('en'); 
+  // 初始化状态时，尝试从 localStorage 获取，默认为 'en'
+  const [lang, setLangState] = useState<Lang>('en');
+
+  // 组件加载时读取一次本地存储
+  useEffect(() => {
+    const savedLang = localStorage.getItem('lang') as Lang;
+    if (savedLang) {
+      setLangState(savedLang);
+    }
+  }, []);
+
+  // 修改 setLang，使其同时更新 localStorage
+  const setLang = (l: Lang) => {
+    setLangState(l);
+    localStorage.setItem('lang', l);
+  };
+
   return (
     <LanguageContext.Provider value={{ lang, setLang }}>
       {children}
@@ -22,7 +36,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// 创建钩子
+// 3. 导出钩子
 export const useLanguage = (): ILanguageContext => {
   const context = useContext(LanguageContext);
   if (!context) {
