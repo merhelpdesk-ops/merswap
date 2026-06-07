@@ -1,8 +1,9 @@
 import React from 'react';
-// 使用相对路径，彻底绕过构建系统的别名解析问题
-import { useLanguage } from './LanguageContext'; 
+// 导入 LanguageProvider 和 useLanguage
+import { useLanguage, LanguageProvider } from './LanguageContext'; 
 
-export const Upsell = () => {
+// 将原来的逻辑拆分为一个内部组件
+const UpsellContent = () => {
   const { lang } = useLanguage(); 
 
   const t = {
@@ -66,3 +67,10 @@ export const Upsell = () => {
     </div>
   );
 };
+
+// 导出包装后的组件，确保它被 LanguageProvider 包裹
+export const Upsell = () => (
+  <LanguageProvider>
+    <UpsellContent />
+  </LanguageProvider>
+);
