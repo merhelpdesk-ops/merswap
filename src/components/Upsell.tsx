@@ -24,7 +24,7 @@ const contentData = {
     },
   },
   cn: {
-    swap: { title: '梅尔聚合器', desc: '梅尔聚合器让您的交易变得轻松！。', img: '/upsell/swap_fee.svg', bg: '#182220' },
+    swap: { title: '梅尔聚合器', desc: '梅尔聚合器让您的交易变得轻松！', img: '/upsell/swap_fee.svg', bg: '#182220' },
     support: { 
       title: 'MERHelpDesk 24/7 客户支持', 
       desc: '如果您遇到任何问题，请点击页面底部的 Twitter (X) 图标发送您的问题。我们的支持团队 24/7 全天候在线，并将竭尽全力为您解决问题。', 
