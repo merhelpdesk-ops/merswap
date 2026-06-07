@@ -35,91 +35,6 @@ if ((isDeveloping || isPreview) && typeof window !== 'undefined') {
   });
 }
 
-// 核心多语言字典
-const globalTranslations: Record<string, string> = {
-  en: 'Swap',
-  zh: '兑换',
-  tw: '兌換',
-  kr: '스왑',
-};
-
-// 动态获取当前应该显示的语系文字
-const getCurrentTargetText = (): string => {
-  if (typeof window === 'undefined') return 'Swap';
-  
-  // 1. 尝试从本页面的语言提供商的 Session/Local 或者 DOM 标记中嗅探用户点选的语言
-  const htmlLang = document.documentElement.lang || '';
-  const browserLang = window.navigator.language || '';
-  
-  // 2. 深度扫描头部导航栏是否有处于激活状态的语言文本指示，兜底匹配
-  const pageContent = document.body ? document.body.innerHTML : '';
-  
-  let currentLang = 'en';
-  
-  // 动态匹配优先级
-  if (htmlLang.includes('tw') || htmlLang.includes('hk') || window.location.search.includes('tw')) {
-    currentLang = 'tw';
-  } else if (htmlLang.includes('zh') || htmlLang.includes('cn')) {
-    currentLang = 'zh';
-  } else if (htmlLang.includes('ko') || htmlLang.includes('kr')) {
-    currentLang = 'kr';
-  } else {
-    // 兜底策略：如果 html 标记没变，通过检测当前页面上切换语言按钮的点击痕迹或全局 window 变量
-    const activeLangText = (window as any).__CURRENT_LANG__ || '';
-    if (activeLangText === 'tw') currentLang = 'tw';
-    else if (activeLangText === 'zh') currentLang = 'zh';
-    else if (activeLangText === 'kr') currentLang = 'kr';
-    else {
-      // 从浏览器语言兜底
-      const combined = browserLang.toLowerCase();
-      if (combined.includes('tw') || combined.includes('hk')) currentLang = 'tw';
-      else if (combined.includes('zh') || combined.includes('cn')) currentLang = 'zh';
-      else if (combined.includes('ko') || combined.includes('kr')) currentLang = 'kr';
-    }
-  }
-
-  return globalTranslations[currentLang] || 'Swap';
-};
-
-// 核心内核注入：动态拦截并完美掉包成当前对应语系的“兑换”
-if (typeof window !== 'undefined') {
-  const interceptAndTranslate = (val: any): any => {
-    if (typeof val === 'string') {
-      const trimmed = val.trim();
-      if (trimmed === 'Swap' || trimmed === 'swap' || trimmed === '兑换' || trimmed === '兌換' || trimmed === '스왑') {
-        return getCurrentTargetText(); // 动态翻译成当前语言
-      }
-    }
-    return val;
-  };
-
-  // 1. 拦截 textContent
-  const originalTextContentDescriptor = Object.getOwnPropertyDescriptor(Node.prototype, 'textContent');
-  if (originalTextContentDescriptor && originalTextContentDescriptor.set) {
-    Object.defineProperty(Node.prototype, 'textContent', {
-      ...originalTextContentDescriptor,
-      set: function (value) {
-        originalTextContentDescriptor.set!.call(this, interceptAndTranslate(value));
-      }
-    });
-  }
-
-  // 2. 拦截 innerHTML
-  const originalInnerHTMLDescriptor = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
-  if (originalInnerHTMLDescriptor && originalInnerHTMLDescriptor.set) {
-    Object.defineProperty(Element.prototype, 'innerHTML', {
-      ...originalInnerHTMLDescriptor,
-      set: function (value) {
-        let newValue = value;
-        if (typeof value === 'string' && (value.trim() === 'Swap' || value.trim() === 'swap')) {
-          newValue = getCurrentTargetText();
-        }
-        originalInnerHTMLDescriptor.set!.call(this, newValue);
-      }
-    });
-  }
-}
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -135,6 +50,13 @@ const PLUGIN_MODE: { label: string; value: IInit['displayMode'] }[] = [
   },
 ];
 
+const translations: Record<string, string> = {
+  en: 'Swap',
+  zh: '兑换',
+  tw: '兌換',
+  kr: '스왑',
+};
+
 function AppContent() {
   const [displayMode, setDisplayMode] = useState<IInit['displayMode']>('integrated');
   const [isSideDrawerOpen, setIsSideDrawerOpen] = useState(false);
@@ -142,17 +64,87 @@ function AppContent() {
   
   const langContext = useLanguage() as any;
 
-  // 将当前上下文语言实时绑定到全局变量，以便底层的原型链拦截器能够秒级同步感知语言切换
   useEffect(() => {
-    if (typeof window !== 'undefined' && langContext) {
-      const current = langContext.language || langContext.locale || 'en';
-      let mapped = 'en';
-      if (current.includes('tw') || current.includes('hk')) mapped = 'tw';
-      else if (current.includes('zh') || current.includes('cn')) mapped = 'zh';
-      else if (current.includes('kr') || current.includes('ko')) mapped = 'kr';
-      (window as any).__CURRENT_LANG__ = mapped;
-    }
-  }, [langContext]);
+    const updateTargetText = () => {
+      const current = langContext?.language || langContext?.locale || 'en';
+      let mappedLang = 'en';
+
+      if (current.includes('tw') || current.includes('hk')) {
+        mappedLang = 'tw';
+      } else if (current.includes('zh') || current.includes('cn')) {
+        mappedLang = 'zh';
+      } else if (current.includes('kr') || current.includes('ko')) {
+        mappedLang = 'kr';
+      }
+
+      const targetText = translations[mappedLang] || 'Swap';
+      const terminalContainers = document.querySelectorAll('#jupiter-terminal, .jupiter-terminal, [class*="terminal"]');
+      
+      const replaceText = (root: Element | ShadowRoot) => {
+        const buttons = root.querySelectorAll('button');
+        buttons.forEach((btn) => {
+          if (btn.querySelector('svg') || btn.getAttribute('aria-label')) return;
+          const txt = btn.textContent?.trim();
+          if (txt === 'Swap' || txt === 'swap' || txt === '兑换' || txt === '兌換' || txt === '스왑') {
+            btn.textContent = targetText;
+          }
+        });
+
+        const textElements = root.querySelectorAll('div, span, p');
+        textElements.forEach((el) => {
+          if (el.children.length === 0) {
+            const txt = el.textContent?.trim();
+            if (txt === 'Swap' || txt === 'swap' || txt === '兑换' || txt === '兌換' || txt === '스왑') {
+              el.textContent = targetText;
+            }
+          }
+        });
+      };
+
+      replaceText(document.body);
+      terminalContainers.forEach((container) => {
+        replaceText(container);
+        if (container.shadowRoot) {
+          replaceText(container.shadowRoot);
+        }
+      });
+    };
+
+    updateTargetText();
+    const timer = setInterval(updateTargetText, 100);
+
+    const observer = new MutationObserver(() => {
+      updateTargetText();
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      characterData: true
+    });
+
+    return () => {
+      clearInterval(timer);
+      observer.disconnect();
+    };
+  }, [langContext, displayMode]);
 
   useEffect(() => {
-    // 强
+    const cleanJupiterAssets = () => {
+      const terminalContainers = document.querySelectorAll('#jupiter-terminal, .jupiter-terminal, [class*="terminal"]');
+      terminalContainers.forEach((container) => {
+        const svgs = container.querySelectorAll('svg');
+        svgs.forEach((svg) => {
+          if (svg.innerHTML.includes('path') || svg.closest('[class*="header"]') || svg.closest('[class*="Header"]')) {
+            svg.style.setProperty('display', 'none', 'important');
+            svg.style.setProperty('width', '0px', 'important');
+            svg.style.setProperty('height', '0px', 'important');
+            svg.style.setProperty('opacity', '0', 'important');
+          }
+        });
+
+        if (container.shadowRoot) {
+          const shadowSvgs = container.shadowRoot.querySelectorAll('svg');
+          shadowSvgs.forEach((svg) => {
+            svg.style.setProperty('display', 'none', 'important');
+            svg.style.setProperty('width', '0px', '
