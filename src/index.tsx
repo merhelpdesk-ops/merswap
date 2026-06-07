@@ -3,7 +3,6 @@ import JupiterApp from './components/Jupiter';
 import { ContextProvider } from './contexts/ContextProvider';
 import { ScreenProvider } from './contexts/ScreenProvider';
 import WalletPassthroughProvider from './contexts/WalletPassthroughProvider';
-import { LanguageProvider } from './contexts/LanguageContext'; // 1. 引入 Provider
 import { appProps } from './library';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useMemo } from 'react';
@@ -15,16 +14,13 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* 2. 在这里包裹 LanguageProvider，确保全站共享语言状态 */}
-      <LanguageProvider>
-        <ContextProvider {...props}>
-          <WalletPassthroughProvider>
-            <ScreenProvider>
-              <JupiterApp {...props} />
-            </ScreenProvider>
-          </WalletPassthroughProvider>
-        </ContextProvider>
-      </LanguageProvider>
+      <ContextProvider {...props}>
+        <WalletPassthroughProvider>
+          <ScreenProvider>
+            <JupiterApp {...props} />
+          </ScreenProvider>
+        </WalletPassthroughProvider>
+      </ContextProvider>
     </QueryClientProvider>
   );
 };
