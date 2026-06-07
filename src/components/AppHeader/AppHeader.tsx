@@ -7,12 +7,18 @@ interface AppHeaderProps {
 
 const AppHeader: React.FC<AppHeaderProps> = () => {
   const [openMobileMenu, setOpenMobileMenu] = useState(false);
-  const [lang, setLang] = useState<'en' | 'cn' | 'tw' | 'ko'>('en');
-
-  const handleToggleMenu = () => setOpenMobileMenu(!openMobileMenu);
+  
+  // 初始化时从 localStorage 读取语言
+  const [lang, setLang] = useState<'en' | 'cn' | 'tw' | 'ko'>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('lang') as any) || 'en';
+    }
+    return 'en';
+  });
 
   const switchLanguage = (newLang: 'en' | 'cn' | 'tw' | 'ko') => {
     setLang(newLang);
+    localStorage.setItem('lang', newLang); // 保存到本地存储
     window.dispatchEvent(new CustomEvent('langChange', { detail: newLang }));
   };
 
