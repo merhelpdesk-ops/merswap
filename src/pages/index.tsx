@@ -35,6 +35,91 @@ if ((isDeveloping || isPreview) && typeof window !== 'undefined') {
   });
 }
 
+// 核心多语言字典
+const globalTranslations: Record<string, string> = {
+  en: 'Swap',
+  zh: '兑换',
+  tw: '兌換',
+  kr: '스왑',
+};
+
+// 动态获取当前应该显示的语系文字
+const getCurrentTargetText = (): string => {
+  if (typeof window === 'undefined') return 'Swap';
+  
+  // 1. 尝试从本页面的语言提供商的 Session/Local 或者 DOM 标记中嗅探用户点选的语言
+  const htmlLang = document.documentElement.lang || '';
+  const browserLang = window.navigator.language || '';
+  
+  // 2. 深度扫描头部导航栏是否有处于激活状态的语言文本指示，兜底匹配
+  const pageContent = document.body ? document.body.innerHTML : '';
+  
+  let currentLang = 'en';
+  
+  // 动态匹配优先级
+  if (htmlLang.includes('tw') || htmlLang.includes('hk') || window.location.search.includes('tw')) {
+    currentLang = 'tw';
+  } else if (htmlLang.includes('zh') || htmlLang.includes('cn')) {
+    currentLang = 'zh';
+  } else if (htmlLang.includes('ko') || htmlLang.includes('kr')) {
+    currentLang = 'kr';
+  } else {
+    // 兜底策略：如果 html 标记没变，通过检测当前页面上切换语言按钮的点击痕迹或全局 window 变量
+    const activeLangText = (window as any).__CURRENT_LANG__ || '';
+    if (activeLangText === 'tw') currentLang = 'tw';
+    else if (activeLangText === 'zh') currentLang = 'zh';
+    else if (activeLangText === 'kr') currentLang = 'kr';
+    else {
+      // 从浏览器语言兜底
+      const combined = browserLang.toLowerCase();
+      if (combined.includes('tw') || combined.includes('hk')) currentLang = 'tw';
+      else if (combined.includes('zh') || combined.includes('cn')) currentLang = 'zh';
+      else if (combined.includes('ko') || combined.includes('kr')) currentLang = 'kr';
+    }
+  }
+
+  return globalTranslations[currentLang] || 'Swap';
+};
+
+// 核心内核注入：动态拦截并完美掉包成当前对应语系的“兑换”
+if (typeof window !== 'undefined') {
+  const interceptAndTranslate = (val: any): any => {
+    if (typeof val === 'string') {
+      const trimmed = val.trim();
+      if (trimmed === 'Swap' || trimmed === 'swap' || trimmed === '兑换' || trimmed === '兌換' || trimmed === '스왑') {
+        return getCurrentTargetText(); // 动态翻译成当前语言
+      }
+    }
+    return val;
+  };
+
+  // 1. 拦截 textContent
+  const originalTextContentDescriptor = Object.getOwnPropertyDescriptor(Node.prototype, 'textContent');
+  if (originalTextContentDescriptor && originalTextContentDescriptor.set) {
+    Object.defineProperty(Node.prototype, 'textContent', {
+      ...originalTextContentDescriptor,
+      set: function (value) {
+        originalTextContentDescriptor.set!.call(this, interceptAndTranslate(value));
+      }
+    });
+  }
+
+  // 2. 拦截 innerHTML
+  const originalInnerHTMLDescriptor = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
+  if (originalInnerHTMLDescriptor && originalInnerHTMLDescriptor.set) {
+    Object.defineProperty(Element.prototype, 'innerHTML', {
+      ...originalInnerHTMLDescriptor,
+      set: function (value) {
+        let newValue = value;
+        if (typeof value === 'string' && (value.trim() === 'Swap' || value.trim() === 'swap')) {
+          newValue = getCurrentTargetText();
+        }
+        originalInnerHTMLDescriptor.set!.call(this, newValue);
+      }
+    });
+  }
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -54,247 +139,20 @@ function AppContent() {
   const [displayMode, setDisplayMode] = useState<IInit['displayMode']>('integrated');
   const [isSideDrawerOpen, setIsSideDrawerOpen] = useState(false);
   const [sideDrawerTab, setSideDrawerTab] = useState<'config' | 'snippet'>('config');
+  
+  const langContext = useLanguage() as any;
+
+  // 将当前上下文语言实时绑定到全局变量，以便底层的原型链拦截器能够秒级同步感知语言切换
+  useEffect(() => {
+    if (typeof window !== 'undefined' && langContext) {
+      const current = langContext.language || langContext.locale || 'en';
+      let mapped = 'en';
+      if (current.includes('tw') || current.includes('hk')) mapped = 'tw';
+      else if (current.includes('zh') || current.includes('cn')) mapped = 'zh';
+      else if (current.includes('kr') || current.includes('ko')) mapped = 'kr';
+      (window as any).__CURRENT_LANG__ = mapped;
+    }
+  }, [langContext]);
 
   useEffect(() => {
-    if (window.Jupiter._instance) {
-      window.Jupiter._instance = null;
-    }
-    setPluginInView(false);
-  }, [displayMode]);
-
-  const methods = useForm<IFormConfigurator>({
-    defaultValues: INITIAL_FORM_CONFIG,
-  });
-
-  const { control } = methods;
-  const simulateWalletPassthrough = useWatch({ control, name: 'simulateWalletPassthrough' });
-
-  const wallets = useMemo(() => [new UnsafeBurnerWalletAdapter(), new SolflareWalletAdapter()], []);
-
-  const ShouldWrapWalletProvider = useMemo(() => {
-    return simulateWalletPassthrough
-      ? ({ children }: { children: ReactNode }) => (
-          <UnifiedWalletProvider
-            wallets={wallets}
-            config={{
-              env: 'mainnet-beta',
-              autoConnect: true,
-              metadata: {
-                name: 'MERDEX',
-                description: '',
-                url: 'https://plugin.jup.ag',
-                iconUrls: ['data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'],
-              },
-              theme: 'jupiter',
-            }}
-          >
-            {children}
-          </UnifiedWalletProvider>
-        )
-      : React.Fragment;
-  }, [wallets, simulateWalletPassthrough]);
-
-  return (
-    <FormProvider {...methods}>
-      <div className="bg-landing-bg h-screen w-screen max-w-screen overflow-x-hidden flex flex-col justify-between gap-y-10">
-        <SideDrawer isOpen={isSideDrawerOpen} setIsOpen={setIsSideDrawerOpen}>
-          <div className="flex flex-col h-full">
-            <div className="flex justify-between items-center py-4 px-4 text-white gap-2 border-b border-white/10">
-              <h1 className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-lime-400 bg-clip-text text-transparent tracking-wide">
-                MERDEX
-              </h1>
-              <button
-                className="p-2 text-white/50 hover:text-gray-300 transition-colors"
-                onClick={() => setIsSideDrawerOpen(false)}
-                aria-label="Close drawer"
-              >
-                <CloseIcon width={20} height={20} />
-              </button>
-            </div>
-
-            <div className="flex justify-between items-center my-4 mx-4 text-white gap-2 border border-white/10 rounded-full">
-              <button
-                className={cn('flex-1 p-2 rounded-full text-landing-primary', {
-                  'bg-landing-primary/20 ': sideDrawerTab === 'config',
-                })}
-                onClick={() => setSideDrawerTab('config')}
-              >
-                Config
-              </button>
-              <button
-                className={cn('flex-1 p-2 rounded-full text-landing-primary', {
-                  'bg-landing-primary/20 ': sideDrawerTab === 'snippet',
-                })}
-                onClick={() => setSideDrawerTab('snippet')}
-              >
-                Snippet
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto px-4 py-2">
-              {sideDrawerTab === 'config' ? <FormConfigurator /> : <CodeBlocks displayMode={'integrated'} />}
-            </div>
-          </div>
-        </SideDrawer>
-        <AppHeader/>
-        <div>
-          <div className="px-2">
-            <div className="flex flex-col items-center h-full w-full md:mt-5">
-              <div className="flex flex-col justify-center items-center text-center">
-                <div className="flex space-x-2">
-                  <V2SexyChameleonText animate={false} className="text-4xl md:text-[60px] md:h-[66px] font-semibold flex flex-row items-center ">
-                    MERDEX
-                  </V2SexyChameleonText>
-                </div>
-                <p className="text-[#9D9DA6] text-md mt-4 heading-[24px]">
-                  MERDEX is a secure and high-speed aggregate platform.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex justify-center">
-              <div className="max-w-[420px] mt-8 rounded-3xl flex flex-col md:flex-row w-full relative border border-white/10">
-                <ShouldWrapWalletProvider>
-                  <div className=" h-full w-full rounded-xl flex flex-col">
-                    
-                    <div className="hidden flex-row justify-between py-3 px-2 border-b border-white/10">
-                      {PLUGIN_MODE.map((mode) => (
-                        <button
-                          key={mode.value}
-                          onClick={() => setDisplayMode(mode.value)}
-                          type="button"
-                          className={cn(
-                            'relative px-4 py-2 justify-center text-white/20  rounded-full text-sm flex-1 ',
-                            {
-                              'bg-landing-primary/10 text-landing-primary': displayMode === mode.value,
-                            },
-                          )}
-                        >
-                          {mode.label}
-                        </button>
-                      ))}
-                    </div>
-
-                    <div className="flex flex-grow justify-center text-white/75 flex-col mx-auto px-2">
-                      <div className="flex flex-row justify-end min-h-[24px] mt-2 items-center">
-                        <div
-                          className={cn('text-white text-center', {
-                            hidden: !simulateWalletPassthrough,
-                          })}
-                        >
-                          <UnifiedWalletButton />
-                        </div>
-                      </div>
-                      <PluginGroup tab={displayMode} />
-                    </div>
-                    <span className="flex justify-center text-center text-xs text-[#9D9DA6] mb-2"></span>
-                  </div>
-                </ShouldWrapWalletProvider>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <Upsell/>
-
-        <Footer />
-      </div>
-    </FormProvider>
-  );
-}
-
-export default function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <LanguageProvider>
-        <style dangerouslySetInnerHTML={{__html: `
-          /* 核心高优先级样式：通过纯 CSS 暴力改写按钮文字 */
-          /* 无论是 Swap、还是任何状态下的原生英文字符，直接隐藏原字符，强制追加“兑换” */
-          #jupiter-terminal button[type="submit"],
-          .jupiter-terminal button[type="submit"],
-          #jupiter-terminal button:has(div),
-          .jupiter-terminal button:not([aria-label]) {
-            font-size: 0 !important; /* 隐藏原本的英文 Swap 字号 */
-          }
-
-          #jupiter-terminal button[type="submit"]::after,
-          .jupiter-terminal button[type="submit"]::after,
-          #jupiter-terminal button:has(div)::after,
-          .jupiter-terminal button:not([aria-label])::after {
-            content: "兑换" !important; /* 强行写入中文 */
-            font-size: 16px !important; /* 恢复正常显示的字号 */
-            display: block !important;
-            width: 100% !important;
-            text-align: center !important;
-          }
-
-          /* 过滤掉钱包连接等带有特定小图标的按钮，防止误伤 */
-          #jupiter-terminal button:has(svg)::after,
-          .jupiter-terminal button:has(svg)::after {
-            content: none !important;
-          }
-          #jupiter-terminal button:has(svg),
-          .jupiter-terminal button:has(svg) {
-            font-size: inherit !important;
-          }
-
-          /* 原有隐藏和清洁资产样式 */
-          #jupiter-terminal svg:first-of-type,
-          .jupiter-terminal svg:first-of-type,
-          [class*="terminal"] div[class*="header"] svg,
-          [class*="terminal"] div[class*="Header"] svg,
-          div[class*="header"] > div > svg:first-child,
-          span[class*="text-white/20"] + div svg {
-            display: none !important;
-            width: 0 !important;
-            height: 0 !important;
-            opacity: 0 !important;
-            visibility: hidden !important;
-          }
-          .bg-landing-bg > div span.text-xs {
-            display: none !important;
-            opacity: 0 !important;
-          }
-
-          .overflow-y-auto div:has(input[name="referralAccount"]),
-          .overflow-y-auto div:has(input[name="referralFeeBps"]),
-          .overflow-y-auto div:has(a[href*="referral"]),
-          .overflow-y-auto div:has(> input[name*="referral"]),
-          .overflow-y-auto p:contains("Referral"),
-          .overflow-y-auto div.border-b:has(+ div input[name*="referral"]) {
-            display: none !important;
-            height: 0 !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            opacity: 0 !important;
-            overflow: hidden !important;
-            visibility: hidden !important;
-          }
-        `}} />
-
-        <DefaultSeo
-          title={'MERDEX'}
-          openGraph={{
-            type: 'website',
-            locale: 'en',
-            title: 'MERDEX: secure and high-speed aggregate platform',
-            description: 'MERDEX is a secure and high-speed aggregate platform.',
-            url: 'https://plugin.jup.ag/',
-            site_name: 'MERDEX',
-            images: [
-              {
-                url: `https://plugin.jup.ag/meta-og/jupiter-meta-plugin.webp`,
-                alt: 'MERDEX Aggregator',
-              },
-            ],
-          }}
-          twitter={{
-            cardType: 'summary_large_image',
-            site: 'jup.ag',
-            handle: '@JupiterExchange',
-          }}
-        />
-        <AppContent />
-      </LanguageProvider>
-    </QueryClientProvider>
-  );
-}
+    // 强
