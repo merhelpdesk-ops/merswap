@@ -21,9 +21,9 @@ const Index = ({
   containerClassName?: string;
 }) => {
   const rateParams = {
-    inAmount: quoteResponse?.quoteResponse.inAmount || BigInt(0), // If there's no selectedRoute, we will use first route value to temporarily calculate
+    inAmount: quoteResponse?.quoteResponse.inAmount || BigInt(0),
     inputAsset: fromTokenInfo,
-    outAmount: quoteResponse?.quoteResponse.outAmount || BigInt(0), // If there's no selectedRoute, we will use first route value to temporarily calculate
+    outAmount: quoteResponse?.quoteResponse.outAmount || BigInt(0),
     outputAsset: toTokenInfo,
   };
 
@@ -50,7 +50,7 @@ const Index = ({
       if (signatureFeeLamports) {
         totalFeeLamports += signatureFeeLamports;
       }
-      return totalFeeLamports / 1e9; // Convert lamports to SOL
+      return totalFeeLamports / 1e9;
     }
     return 0;
   }, [quoteResponse]);
@@ -82,12 +82,6 @@ const Index = ({
         </div>
       )}
 
-      <div className="flex items-center justify-between text-xs">
-        <div className="text-primary-text/50">
-          <span>Platform Fee</span>
-        </div>
-        <div className="text-primary-text">{fee}%</div>
-      </div>
       <TransactionFee gasFee={gasFee} gasless={quoteResponse?.quoteResponse.gasless} />
     </div>
   );
