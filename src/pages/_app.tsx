@@ -2,9 +2,6 @@ import { UnifiedWalletButton, UnifiedWalletProvider } from '@jup-ag/wallet-adapt
 import { DefaultSeo } from 'next-seo';
 import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 
-import 'tailwindcss/tailwind.css';
-import '../styles/globals.css';
-
 import AppHeader from 'src/components/AppHeader/AppHeader';
 import Footer from 'src/components/Footer/Footer';
 
@@ -65,7 +62,6 @@ function AppContent() {
   const [isSideDrawerOpen, setIsSideDrawerOpen] = useState(false);
   const [sideDrawerTab, setSideDrawerTab] = useState<'config' | 'snippet'>('config');
   
-  // 核心修复：使用断言并提供备用读取方案，同时兼容 language 和 locale，彻底解决 Vercel 报错
   const langContext = useLanguage() as any;
   const currentLang = langContext.language || langContext.locale || 'en';
 
