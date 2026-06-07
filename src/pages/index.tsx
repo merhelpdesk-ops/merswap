@@ -66,9 +66,9 @@ function AppContent() {
 
   useEffect(() => {
     const updateButtonText = () => {
-      // 更加激进的语言检测：优先读取系统/组件上下文，其次读取浏览器本身的导航语言设置
+      // 1. 获取当前系统采用的语言
       const contextLang = langContext?.language || langContext?.locale || '';
-      const browserLang = typeof window !== 'undefined' ? (window.navigator.language || (window.navigator as any).userLanguage || '') : '';
+      const browserLang = typeof window !== 'undefined' ? (window.navigator.language || '') : '';
       
       let currentLang = 'en';
       const combined = (contextLang + '_' + browserLang).toLowerCase();
@@ -82,37 +82,50 @@ function AppContent() {
       }
 
       const targetText = translations[currentLang] || 'Swap';
+
+      // 2. 多重容器深度穿透扫描（不管它是在外部还是 ShadowRoot）
       const terminalContainers = document.querySelectorAll('#jupiter-terminal, .jupiter-terminal, [class*="terminal"]');
       
-      terminalContainers.forEach((container) => {
-        const findAndReplace = (root: Element | ShadowRoot) => {
-          const buttons = root.querySelectorAll('button');
-          buttons.forEach((btn) => {
-            const txt = btn.textContent?.trim();
-            // 只要匹配到任何已知的原始文本，一律实施强制翻译替换
-            if (txt === 'Swap' || txt === '兑换' || txt === '兌換' || txt === '스왑') {
-              const span = btn.querySelector('span');
-              if (span) {
-                span.textContent = targetText;
-              } else {
-                btn.textContent = targetText;
-              }
-            }
-          });
-        };
+      const processElements = (root: Element | ShadowRoot) => {
+        // 激进策略 1：直接扫描大绿按钮内部的所有 button 标签
+        const buttons = root.querySelectorAll('button');
+        buttons.forEach((btn) => {
+          const txt = btn.textContent?.trim();
+          if (txt === 'Swap' || txt === '兑换' || txt === '兌換' || txt === '스왑') {
+            // 不管里面有没有额外的 span，直接清空并统一设置成目标翻译文本，打破任何旧有的内部节点干扰
+            btn.textContent = targetText;
+          }
+        });
 
-        findAndReplace(container);
+        // 激进策略 2：针对可能存在的内联文字节点进行深度定向清洗
+        const allElements = root.querySelectorAll('div, span, p');
+        allElements.forEach((el) => {
+          if (el.children.length === 0) { // 仅处理最底层的文字叶子节点
+            const txt = el.textContent?.trim();
+            if (txt === 'Swap' || txt === '兑换' || txt === '兌換' || txt === '스왑') {
+              el.textContent = targetText;
+            }
+          }
+        });
+      };
+
+      // 兜底扫描：先处理页面全局环境
+      processElements(document.body);
+
+      // 容器级独立扫描
+      terminalContainers.forEach((container) => {
+        processElements(container);
         if (container.shadowRoot) {
-          findAndReplace(container.shadowRoot);
+          processElements(container.shadowRoot);
         }
       });
     };
 
-    // 立即执行一次
+    // 立即执行
     updateButtonText();
 
-    // 毫秒级定时补丁，防止异步流控组件二次覆写 DOM
-    const timer = setInterval(updateButtonText, 250);
+    // 毫秒级防闪烁高频轮询计时器（专门对付异步 React 重新渲染覆盖 DOM）
+    const timer = setInterval(updateButtonText, 100);
 
     const observer = new MutationObserver(() => {
       updateButtonText();
