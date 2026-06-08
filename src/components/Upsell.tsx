@@ -11,7 +11,7 @@ const contentData = {
       bg: '#151E31' 
     },
     ultra: { 
-      title: 'Ultra Swap', 
+      title: 'The ultimate transaction', 
       desc: 'Seamlessly integrate end to end jup.ag swap experience with all Ultra features', 
       img: '/upsell/seemless_integration.svg', 
       bg: '#002F25' 
