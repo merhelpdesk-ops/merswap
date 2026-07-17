@@ -33,7 +33,7 @@ const contentData = {
     },
     ultra: { 
       title: '极致交易', 
-      desc: '聚合多DEX服务和捕获代币信息MER DEX为您提供安全高效的交易体验！', 
+      desc: '让您获得网络优质报价！', 
       img: '/upsell/seemless_integration.svg', 
       bg: '#002F25' 
     },
@@ -54,7 +54,7 @@ const contentData = {
     },
     ultra: { 
       title: '極致交易', 
-      desc: '聚合多DEX服务和捕獲代幣資訊MER DEX 為您提供安全高效的交易體驗！', 
+      desc: '讓您獲得網絡優質報價！', 
       img: '/upsell/seemless_integration.svg', 
       bg: '#002F25' 
     },
@@ -75,7 +75,7 @@ const contentData = {
     },
     ultra: { 
       title: '울트라 스왑', 
-      desc: '다중 DEX 서비스를 통합하고 토큰 정보를 포획하여 MER DEX가 안전하고 효율적인 거래 경험을 제공합니다!', 
+      desc: '네트워크 최적의 가격을 제공합니다!', 
       img: '/upsell/seemless_integration.svg', 
       bg: '#002F25' 
     },
