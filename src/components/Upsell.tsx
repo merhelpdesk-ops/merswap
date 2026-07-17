@@ -74,7 +74,7 @@ const contentData = {
       bg: '#151E31' 
     },
     ultra: { 
-      title: '울트라 스왑', 
+      title: '고품질 거래', 
       desc: '네트워크 최적의 가격을 제공합니다!', 
       img: '/upsell/seemless_integration.svg', 
       bg: '#002F25' 
