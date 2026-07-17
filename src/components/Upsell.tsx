@@ -5,8 +5,8 @@ const contentData = {
   en: {
     swap: { title: 'Swap fees', desc: 'Earn swap fees easily.', img: '/upsell/swap_fee.svg', bg: '#182220' },
     support: { 
-      title: '24/7 Customer Support', 
-      desc: 'Contact 24/7 Support!', 
+      title: 'Around-the-Clock Customer Support', 
+      desc: 'Contact Our Always-On Support Team!', 
       img: '/upsell/customizable_options.svg', 
       bg: '#151E31' 
     },
@@ -68,8 +68,8 @@ const contentData = {
   ko: {
     swap: { title: 'MER DEX', desc: 'MER DEX, 트레이딩이 쉬워집니다.', img: '/upsell/swap_fee.svg', bg: '#182220' },
     support: { 
-      title: '24시간 지원팀', 
-      desc: '24시간 지원 문의', 
+      title: '스물네 시간 지원팀', 
+      desc: '상시 고객 지원', 
       img: '/upsell/customizable_options.svg', 
       bg: '#151E31' 
     },
