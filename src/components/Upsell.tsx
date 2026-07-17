@@ -12,7 +12,7 @@ const contentData = {
     },
     ultra: { 
       title: 'The ultimate transaction', 
-      desc: 'Seamlessly integrate end to end jup.ag swap experience with all Ultra features', 
+      desc: 'Best Rates Across the Network', 
       img: '/upsell/seemless_integration.svg', 
       bg: '#002F25' 
     },
