@@ -38,8 +38,8 @@ const contentData = {
       bg: '#002F25' 
     },
     oneStop: { 
-      title: '一站式服务！MERDEX 为您提供全球聚合器！', 
-      desc: 'MERDEX 已为您聚合全网报价！我们将竭尽所能为您带来更多市场机会！', 
+      title: '一站式服务！梅尔为您提供全球聚合器！', 
+      desc: '梅尔已为您聚合全网报价！我们将竭尽所能为您带来更多市场机会！', 
       img: '/upsell/rpc_less.svg', 
       bg: '#231B32' 
     },
@@ -59,8 +59,8 @@ const contentData = {
       bg: '#002F25' 
     },
     oneStop: { 
-      title: '一站式服務！MERDEX 為您提供全球聚合器！', 
-      desc: 'MERDEX 已為您聚合全網報價！我們將竭盡所能為您帶來更多市場機會！', 
+      title: '一站式服務！梅爾為您提供全球聚合器！', 
+      desc: '梅爾已為您聚合全網報價！我們將竭盡所能為您帶來更多市場機會！', 
       img: '/upsell/rpc_less.svg', 
       bg: '#231B32' 
     },
@@ -80,7 +80,7 @@ const contentData = {
       bg: '#002F25' 
     },
     oneStop: { 
-      title: '원스톱 서비스! MERDEX가 글로벌 애그리게이터를 제공합니다!', 
+      title: '원스톱 서비스! 메르가 글로벌 거래 지원을 담당합니다!', 
       desc: 'MERDEX가 전체 네트워크 견적을 통합했습니다! 더 많은 시장 기회를 제공하기 위해 최선을 다하겠습니다!', 
       img: '/upsell/rpc_less.svg', 
       bg: '#231B32' 
