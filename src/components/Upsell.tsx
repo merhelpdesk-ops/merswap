@@ -6,7 +6,7 @@ const contentData = {
     swap: { title: 'Swap fees', desc: 'Earn swap fees easily.', img: '/upsell/swap_fee.svg', bg: '#182220' },
     support: { 
       title: 'MERHelpDesk 24/7 customer service support', 
-      desc: 'If you encounter any issues, please click the Twitter (X) icon at the bottom of the page and send us your questions. Our support team is available 24/7 and will do our best to resolve any problems you may have.', 
+      desc: 'If you have any questions, please feel free to contact our 24-hour support team!', 
       img: '/upsell/customizable_options.svg', 
       bg: '#151E31' 
     },
@@ -27,7 +27,7 @@ const contentData = {
     swap: { title: '梅尔聚合器', desc: '梅尔聚合器让您的交易变得轻松！', img: '/upsell/swap_fee.svg', bg: '#182220' },
     support: { 
       title: 'MERHelpDesk 24/7 客户支持', 
-      desc: '如果您遇到任何问题，请点击页面底部的 Twitter (X) 图标发送您的问题。我们的支持团队 24/7 全天候在线，并将竭尽全力为您解决问题。', 
+      desc: '任何问题均可联系我们全天候支持团队！', 
       img: '/upsell/customizable_options.svg', 
       bg: '#151E31' 
     },
@@ -48,7 +48,7 @@ const contentData = {
     swap: { title: '梅爾聚合器', desc: '梅爾聚合器讓您的交易變得輕鬆。', img: '/upsell/swap_fee.svg', bg: '#182220' },
     support: { 
       title: 'MERHelpDesk 24/7 客戶支持', 
-      desc: '如果您遇到任何問題，請點擊頁面底部的 Twitter (X) 圖標發送您的問題。我們的支持團隊 24/7 全天候在線，並將竭盡全力為您解決問題。', 
+      desc: '任何問題均可聯繫我們的全天候支援團隊！', 
       img: '/upsell/customizable_options.svg', 
       bg: '#151E31' 
     },
@@ -69,7 +69,7 @@ const contentData = {
     swap: { title: 'MER DEX', desc: 'MER DEX, 트레이딩이 쉬워집니다.', img: '/upsell/swap_fee.svg', bg: '#182220' },
     support: { 
       title: 'MERHelpDesk 24/7 고객 서비스 지원', 
-      desc: '문제가 발생하면 페이지 하단의 Twitter (X) 아이콘을 클릭하여 문의해 주세요. 고객 지원 팀이 24/7 대기 중이며 문제를 해결하기 위해 최선을 다하겠습니다.', 
+      desc: '어떠한 문제든 언제든지 저희 24시간 지원팀으로 문의해 주세요!', 
       img: '/upsell/customizable_options.svg', 
       bg: '#151E31' 
     },
