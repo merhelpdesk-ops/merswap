@@ -66,7 +66,7 @@ const contentData = {
     },
   },
   ko: {
-    swap: { title: 'MER DEX', desc: 'MER DEX, 트레이딩이 쉬워집니다.', img: '/upsell/swap_fee.svg', bg: '#182220' },
+    swap: { title: '메르 애그리게이터', desc: '메르, 거래가 간편해집니다!', img: '/upsell/swap_fee.svg', bg: '#182220' },
     support: { 
       title: '스물네 시간 지원팀', 
       desc: '상시 고객 지원', 
